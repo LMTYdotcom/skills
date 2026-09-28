@@ -52,6 +52,8 @@ words:
   - AUTOUPDATER
   - lycheeverse
   - ossf
+  - pyflakes
+  - rhysd
   - sarif
   - shellcheck
   - SLSA

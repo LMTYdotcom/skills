@@ -106,10 +106,11 @@ check-jsonschema --builtin-schema vendor.github-workflows .github/workflows/*.ya
 The workflow schema does not check expression contexts, so CI also runs
 [actionlint](https://github.com/rhysd/actionlint). A context used where
 it is not available passes the schema and then fails at GitHub before
-any job starts, with no log to read. CI downloads the release and checks
-its sha256 before running it; to move to a newer actionlint, bump the
-version and the hash together in `validate.yaml`, taking the hash from
-the release's `checksums.txt`. Locally, run `actionlint` from your PATH.
+any job starts, with no log to read. CI runs the official
+`rhysd/actionlint` image, pinned by digest; to move to a newer
+actionlint, update the digest and the version comment together in
+`validate.yaml`, taking the digest from the tag on Docker Hub. Locally,
+run `actionlint` from your PATH.
 
 [zizmor](https://docs.zizmor.sh) then audits the same files for the
 ways a workflow gets exploited: template injection, a dangerous trigger,

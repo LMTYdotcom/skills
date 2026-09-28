@@ -78,6 +78,10 @@ here uses it from then on.
 No skill needs LMTY to run, and none will refuse work without it. If you
 never connect, the skills research from scratch and say so.
 
+Connecting sends your requests to LMTY's server. LMTY's
+[Privacy policy](https://lmty.com/privacy) and
+[Terms of service](https://lmty.com/terms) cover what happens to them.
+
 <details>
 <summary>Connecting by hand, or with an API token</summary>
 
