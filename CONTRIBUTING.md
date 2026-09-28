@@ -163,6 +163,11 @@ so a substituted package fails the build. To add or change a tool, edit
 `pip-compile --generate-hashes --strip-extras scripts/requirements.in`;
 Dependabot keeps the compiled file current otherwise.
 
+The validator is the test suite, and it grows with the pack: a change
+that adds a requirement on a skill or a manifest comes with a rule in
+`validate_skills.py` that enforces it, in the same pull request. The
+validator is never weakened to let a change through.
+
 `validate_skills.py` fails on: a `plugin.json` field outside the Agent
 Plugins schema, a name that breaks its rules or the OpenAI directory's,
 a `com.openai` interface that OpenAI's validator or the public directory
