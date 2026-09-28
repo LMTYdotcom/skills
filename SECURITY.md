@@ -25,4 +25,6 @@ privately through GitHub:
 **[Report a vulnerability](https://github.com/LMTYdotcom/skills/security/advisories/new)**
 
 Please do not open a public issue for security reports. We will
-acknowledge within five working days.
+acknowledge within five working days, agree a fix and a disclosure date
+with you, and publish an advisory when the fix ships. Please give us the
+chance to fix the problem before disclosing it elsewhere.

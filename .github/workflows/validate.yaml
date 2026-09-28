@@ -100,11 +100,17 @@ jobs:
           check-jsonschema --builtin-schema vendor.github-issue-config .github/ISSUE_TEMPLATE/config.yml
 
       # Catches invalid expression contexts the schema cannot, and runs
-      # shellcheck over every run: block. The trailing version pins the
-      # binary; the URL only pins the downloader.
+      # shellcheck over every run: block. Pinned by the release asset's
+      # sha256 from actionlint_<version>_checksums.txt; bump the version
+      # and the hash together.
       - name: actionlint
+        env:
+          VERSION: "1.7.12"
+          SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
         run: |
-          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          curl -fsSLO "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz"
+          echo "${SHA256}  actionlint_${VERSION}_linux_amd64.tar.gz" | sha256sum -c -
+          tar -xzf "actionlint_${VERSION}_linux_amd64.tar.gz" actionlint
           ./actionlint -color
 
       # Security audit of the workflows: template injection, dangerous
