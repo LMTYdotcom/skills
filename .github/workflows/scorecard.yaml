@@ -17,9 +17,10 @@ jobs:
   analysis:
     name: Analyze
     runs-on: ubuntu-latest
-    # security-events uploads the SARIF; id-token lets Scorecard publish
-    # the signed result to its public API.
+    # contents lets checkout read the repository; security-events uploads
+    # the SARIF; id-token lets Scorecard publish the signed result.
     permissions:
+      contents: read
       security-events: write
       id-token: write
     steps:
