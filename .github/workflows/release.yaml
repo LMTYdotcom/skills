@@ -44,13 +44,12 @@ jobs:
       # Exactly one asset, by name. Gemini CLI only uses a generic asset
       # when it is the only one, so a second file would break its installs.
       # Releases are immutable: draft first so the asset is attached before
-      # the release is locked, then publish.
+      # the release is locked, then publish. The title defaults to the tag.
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" "dist/lmty-${GITHUB_REF_NAME#v}.zip" \
-            --title "Competitive Skills by LMTY ${GITHUB_REF_NAME#v}" \
             --notes-file notes.md \
             --verify-tag \
             --draft
