@@ -101,12 +101,14 @@ jobs:
 
       # Catches invalid expression contexts the schema cannot, and runs
       # shellcheck over every run: block. The official image, pinned by
-      # digest; shellcheck and pyflakes are inside it. To bump, take the
-      # new tag's digest from Docker Hub and update both.
+      # digest; shellcheck and pyflakes are inside it. Run with docker
+      # rather than `uses: docker://`, which the Actions allow-list cannot
+      # express. To bump, take the new tag's digest from Docker Hub and
+      # update both lines.
       - name: actionlint
-        uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # 1.7.12
-        with:
-          args: -color
+        env:
+          IMAGE: rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # 1.7.12
+        run: docker run --rm --volume "${GITHUB_WORKSPACE}:/repo:ro" --workdir /repo "${IMAGE}" -color
 
       # Security audit of the workflows: template injection, dangerous
       # triggers, credential persistence, unpinned actions. actionlint
