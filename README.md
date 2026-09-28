@@ -3,6 +3,7 @@
 [![Installs](https://skills.sh/b/LMTYdotcom/skills)](https://skills.sh/LMTYdotcom/skills)
 [![Validate](https://github.com/LMTYdotcom/skills/actions/workflows/validate.yaml/badge.svg)](https://github.com/LMTYdotcom/skills/actions/workflows/validate.yaml)
 [![Release](https://img.shields.io/github/v/release/LMTYdotcom/skills?label=release)](https://github.com/LMTYdotcom/skills/releases/latest)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14999/badge)](https://www.bestpractices.dev/projects/14999)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Use your AI assistant for competitive work you already do: researching
@@ -199,6 +200,13 @@ includes `lmty-<version>.zip`. Unzip it and point your assistant at the
 folder, or copy a single folder out of `skills/` into wherever your
 assistant keeps skills (for example `~/.claude/skills/`). Each skill is
 self-contained.
+
+Releases are immutable and signed. To check that a zip is the one this
+repository published:
+
+```bash
+gh release verify-asset v1.0.0 lmty-1.0.0.zip -R LMTYdotcom/skills
+```
 
 </details>
 
