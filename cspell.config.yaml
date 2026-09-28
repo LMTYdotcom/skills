@@ -46,13 +46,18 @@ words:
   - sname
 
   # Workflow vocabulary: the owners of the actions we pin, two Claude Code
-  # environment variables, and the linter actionlint hands run: blocks to.
+  # environment variables, the linters, and the supply-chain formats.
   - Anson
   - AUTOINSTALL
   - AUTOUPDATER
   - lycheeverse
+  - ossf
+  - sarif
   - shellcheck
+  - SLSA
   - vercel
+  - zizmor
+  - zizmorcore
 
   # Fictional placeholders. The skills name no real company: Acme is the
   # home company, Northwind a competitor, Globex the buyer account, and

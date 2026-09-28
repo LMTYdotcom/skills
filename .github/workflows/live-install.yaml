@@ -31,7 +31,9 @@ jobs:
       - name: Isolate the Claude config
         run: echo "CLAUDE_CONFIG_DIR=$RUNNER_TEMP/claude" >> "$GITHUB_ENV"
 
-      - run: npm install -g @anthropic-ai/claude-code
+      # Unpinned on purpose: the install is tested against the version a
+      # user gets today.
+      - run: npm install -g @anthropic-ai/claude-code # zizmor: ignore[adhoc-packages]
 
       - name: Marketplace add and install
         run: |
