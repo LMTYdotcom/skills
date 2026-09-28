@@ -107,6 +107,16 @@ it is not available passes the schema and then fails at GitHub before
 any job starts, with no log to read. Run it locally the same way CI
 does, or with `actionlint` on your PATH.
 
+[zizmor](https://docs.zizmor.sh) then audits the same files for the
+ways a workflow gets exploited: template injection, a dangerous trigger,
+a credential left in the checkout, an unpinned action. CI runs it
+through `zizmorcore/zizmor-action`, which pins the zizmor build by
+container digest, so Dependabot's bump of the action is how zizmor is
+upgraded. Run it locally with `pip install zizmor` and
+`zizmor .github/workflows/`. An install that is unpinned on purpose
+carries a `# zizmor: ignore[...]` comment saying why; do not add one to
+make a finding go away.
+
 `.agents/plugins/marketplace.json` and `gemini-extension.json` have no
 published schema; `validate_skills.py` checks their shape against the
 Codex source and the Gemini extension reference instead.
@@ -177,8 +187,11 @@ validate --strict` on both Claude Code files (the check the
 community-marketplace review runs), and two install smoke tests - a
 Claude Code marketplace add and install from the checkout, and `npx
 skills add . --list`. Weekly, `links.yaml` checks every link in the
-Markdown and `live-install.yaml` installs from GitHub the way a user
-would.
+Markdown, `live-install.yaml` installs from GitHub the way a user
+would, and `scorecard.yaml` runs the
+[OpenSSF Scorecard](https://scorecard.dev), whose findings land in the
+Security tab and whose score is published at
+[scorecard.dev](https://scorecard.dev/viewer/?uri=github.com/LMTYdotcom/skills).
 
 Two workflows handle pull requests rather than checking them.
 `labeler.yaml` labels a pull request from the paths it touches, using
@@ -311,12 +324,18 @@ Releases are tagged `vX.Y.Z` and published by `.github/workflows/release.yaml`.
 3. Run the loop; `python3 scripts/package_release.py` should produce
    `dist/lmty-X.Y.Z.zip`.
 4. Commit, tag `vX.Y.Z`, push the tag. The workflow validates, rebuilds
-   the zip, and creates the GitHub Release with it attached.
+   the zip, signs its build provenance, and creates the GitHub Release
+   with it attached.
 
 Releases are immutable. Once published, the zip and the tag cannot be
 changed or deleted, and the tag name can never be reused, so a mistake
 in a release is fixed by publishing the next patch version, not by
 editing the one that shipped. Release notes stay editable.
+
+Every release carries two attestations. `gh release verify vX.Y.Z -R
+LMTYdotcom/skills` proves the zip is the one attached to that release;
+`gh attestation verify lmty-X.Y.Z.zip -R LMTYdotcom/skills` proves it
+was built by `release.yaml` from the tagged commit.
 
 Bump the patch version for wording and fixes, the minor version when a
 skill is added or its scope changes, the major version if the plugin is

@@ -4,8 +4,12 @@ on:
   push:
     tags: ["v*"]
 
+# contents: write publishes the release; id-token and attestations sign
+# the zip's build provenance.
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -13,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -27,6 +33,14 @@ jobs:
 
       - name: Package
         run: python3 scripts/package_release.py --check-tag "${GITHUB_REF_NAME}"
+
+      # SLSA provenance: proves the zip was built by this workflow from
+      # this commit. Verify with
+      # `gh attestation verify lmty-<version>.zip -R LMTYdotcom/skills`.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/lmty-*.zip
 
       # Everything under this version's `## [X.Y.Z] - date` heading, up to
       # the next heading or the link definitions at the foot.
