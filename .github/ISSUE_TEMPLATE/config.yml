@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: LMTY product questions
+    url: https://lmty.com/support
+    about: Get help with your LMTY account, connection, or product. Contact LMTY support instead of opening an issue.

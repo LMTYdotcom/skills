@@ -1,0 +1,66 @@
+version: "0.2"
+
+language: en-US
+
+ignorePaths:
+  - node_modules/**
+  - dist/**
+  - .claude-plugin/**
+  - .agents/**
+  - gemini-extension.json
+  - mcp.json
+  - .mcp.json
+  - skills/*/references/TRUST.md
+  - skills/*/references/CONTEXT.md
+  - skills/*/references/DEGRADATION.md
+  - skills/*/references/QUALITY.md
+  - skills/*/references/LMTY.md
+  - skills/*/references/INTERNAL.md
+  - LICENSE
+
+words:
+  # Domain vocabulary.
+  - battlecard
+  - battlecards
+  - deprioritize
+  - overclaiming
+  - permissioned
+  - unsourced
+  - upsold
+  - watchlist
+
+  # The pack, its docs and the wider ecosystem.
+  - agentskills
+  - frontmatter
+  - LMTY
+  - LMTYdotcom
+  - streamable
+
+  # Identifiers that appear in prose or code: a brand color placeholder, a
+  # check-jsonschema flag, a loop variable, a forbidden filename, a dependency.
+  - EVALS
+  - jsonschema
+  - pyyaml
+  - RRGGBB
+  - schemafile
+  - sname
+
+  # Workflow vocabulary: the owners of the actions we pin, two Claude Code
+  # environment variables, and the linter actionlint hands run: blocks to.
+  - Anson
+  - AUTOINSTALL
+  - AUTOUPDATER
+  - lycheeverse
+  - shellcheck
+  - vercel
+
+  # Fictional placeholders. The skills name no real company: Acme is the
+  # home company, Northwind a competitor, Globex the buyer account, and
+  # Initech another competitor.
+  - Northwind
+  - Globex
+  - Initech
+
+  # Real products, and the only ones allowed. Kiro and the other clients in the
+  # README are statements of compatibility, not examples inside a skill.
+  - Kiro

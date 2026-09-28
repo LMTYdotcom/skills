@@ -1,0 +1,226 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DO_NOT_TRACK: "1"
+  DISABLE_TELEMETRY: "1"
+  DISABLE_ERROR_REPORTING: "1"
+  DISABLE_AUTOUPDATER: "1"
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+  CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL: "1"
+
+jobs:
+  structure:
+    name: Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - run: pip install pyyaml
+
+      - name: Regenerate everything derived from a source
+        run: python3 scripts/build_skills.py
+
+      - name: Generated files are committed in sync
+        run: |
+          if ! git diff --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "::error::Vendored references or client manifests are out of date. Run scripts/build_skills.py and commit."
+            git --no-pager status --short
+            exit 1
+          fi
+
+      - name: Structural validation
+        run: python3 scripts/validate_skills.py
+
+      - name: Release zip builds
+        run: python3 scripts/package_release.py
+
+      - name: No CRLF anywhere
+        run: |
+          if git ls-files -z | xargs -0 grep -lI $'\r' -- ; then
+            echo "::error::CRLF line endings found"
+            exit 1
+          fi
+
+  schemas:
+    name: Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - run: pip install check-jsonschema
+
+      - name: Agent Plugins 1.0.0
+        run: |
+          check-jsonschema --schemafile https://agent-plugins.org/schemas/1.0.0/plugin.schema.json plugin.json
+          check-jsonschema --schemafile https://agent-plugins.org/schemas/1.0.0/mcp.schema.json mcp.json
+
+      - name: Claude Code manifests
+        run: |
+          check-jsonschema --schemafile https://json.schemastore.org/claude-code-plugin-manifest.json .claude-plugin/plugin.json
+          check-jsonschema --schemafile https://json.schemastore.org/claude-code-marketplace.json .claude-plugin/marketplace.json
+
+      # No published schema; shape is checked in scripts/validate_skills.py.
+      - name: Codex marketplace and Gemini extension are JSON
+        run: |
+          python3 -m json.tool .agents/plugins/marketplace.json > /dev/null
+          python3 -m json.tool gemini-extension.json > /dev/null
+          python3 -m json.tool .mcp.json > /dev/null
+
+      - name: GitHub metadata
+        run: |
+          check-jsonschema --builtin-schema vendor.github-workflows .github/workflows/*.yaml
+          check-jsonschema --builtin-schema vendor.dependabot .github/dependabot.yaml
+          check-jsonschema --builtin-schema vendor.github-issue-forms .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/skill_request.yml
+          check-jsonschema --builtin-schema vendor.github-issue-config .github/ISSUE_TEMPLATE/config.yml
+
+      # Catches invalid expression contexts the schema cannot, and runs
+      # shellcheck over every run: block. The trailing version pins the
+      # binary; the URL only pins the downloader.
+      - name: actionlint
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          ./actionlint -color
+
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: editorconfig
+        uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
+
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+
+      - name: spelling
+        uses: streetsidesoftware/cspell-action@6f3c77c1406bc930f944ba97e9801a22e42caf58 # v9.1.0
+        with:
+          files: "**/*.{md,py,json,yaml,yml}"
+          incremental_files_only: false
+          # Without this the glob never reaches .github.
+          check_dot_files: true
+
+  spec:
+    name: Agent Skills spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      # Pinned to a commit; bump deliberately.
+      - name: Install the reference validator
+        run: pip install "git+https://github.com/agentskills/agentskills.git@f130f348f502d9804278a617f86929846896d2e9#subdirectory=skills-ref"
+
+      - name: Every skill conforms to the spec
+        run: |
+          for d in skills/*/; do
+            skills-ref validate "$d"
+          done
+
+  codex:
+    name: Codex
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      # OpenAI's submission validator only reads the legacy
+      # .codex-plugin/plugin.json layout, so it is derived into a scratch
+      # copy first, as OpenAI's portal does. Pinned to the last commit
+      # before openai/codex removed the script; there is no newer one.
+      - name: OpenAI's plugin validator
+        run: |
+          pip install pyyaml check-jsonschema
+          base=https://raw.githubusercontent.com/openai/codex/84aa75204ad604bcf498df180d128181c89b2f0b/codex-rs/skills/src/assets/samples/plugin-creator/scripts
+          curl -fsSL "$base/validate_plugin.py" -o /tmp/validate_plugin.py
+          curl -fsSL "$base/identifier_validation.py" -o /tmp/identifier_validation.py
+          rm -rf /tmp/compat && cp -r . /tmp/compat && mkdir /tmp/compat/.codex-plugin
+          python3 -c 'import sys; sys.path.insert(0, "scripts"); from build_skills import codex_compat_manifest; sys.stdout.write(codex_compat_manifest())' > /tmp/compat/.codex-plugin/plugin.json
+          python3 /tmp/validate_plugin.py /tmp/compat
+          check-jsonschema --schemafile https://www.schemastore.org/codex-plugin-manifest.json /tmp/compat/.codex-plugin/plugin.json
+
+  claude-code:
+    name: Claude Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26"
+
+      # $RUNNER_TEMP is not available to a job-level env block.
+      - name: Isolate the Claude config
+        run: echo "CLAUDE_CONFIG_DIR=$RUNNER_TEMP/claude" >> "$GITHUB_ENV"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # --strict is what the community-marketplace review runs.
+      - name: Validate plugin manifest
+        run: claude plugin validate .claude-plugin/plugin.json --strict
+
+      - name: Validate marketplace
+        run: claude plugin validate .claude-plugin/marketplace.json --strict
+
+      - name: Install from this checkout
+        run: |
+          mkdir -p "$CLAUDE_CONFIG_DIR"
+          claude plugin marketplace add "$GITHUB_WORKSPACE"
+          claude plugin install lmty@lmty-plugins
+          claude plugin list | tee list.txt
+          grep -q "lmty@lmty-plugins" list.txt
+
+      - name: All skills are loaded
+        run: |
+          expected=$(find skills -mindepth 1 -maxdepth 1 -type d | wc -l)
+          found=$(find -L "$CLAUDE_CONFIG_DIR" -name SKILL.md -path "*skills*" | wc -l)
+          echo "expected=$expected found=$found"
+          test "$found" -eq "$expected"
+
+  skills-cli:
+    name: skills CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26"
+
+      - name: npx skills add discovers every skill
+        run: |
+          npx -y skills add . --list 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | tee list.txt
+          for d in skills/*/; do
+            name=$(basename "$d")
+            grep -q "$name" list.txt || { echo "::error::$name not discovered"; exit 1; }
+          done

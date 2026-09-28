@@ -1,0 +1,43 @@
+# Path labels for pull requests, applied by .github/workflows/labeler.yaml.
+# Every label must already exist in the repository; the action does not
+# create them.
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - ".github/PULL_REQUEST_TEMPLATE.md"
+          - ".github/ISSUE_TEMPLATE/**"
+
+skills:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "skills/**"
+
+shared-references:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "shared-references/**"
+
+build:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "scripts/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+          - ".github/dependabot.yaml"
+          - ".github/labeler.yaml"
+          - ".github/CODEOWNERS"
+
+manifests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "plugin.json"
+          - "mcp.json"
+          - ".mcp.json"
+          - "gemini-extension.json"
+          - ".claude-plugin/**"
+          - ".agents/**"

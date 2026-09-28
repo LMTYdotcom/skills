@@ -1,0 +1,18 @@
+* text=auto eol=lf
+
+*.png binary
+*.zip binary
+
+.claude-plugin/plugin.json       linguist-generated=true
+.claude-plugin/marketplace.json  linguist-generated=true
+.agents/plugins/marketplace.json linguist-generated=true
+.mcp.json                        linguist-generated=true
+mcp.json                         linguist-generated=true
+gemini-extension.json            linguist-generated=true
+
+skills/*/references/TRUST.md       linguist-generated=true
+skills/*/references/CONTEXT.md     linguist-generated=true
+skills/*/references/DEGRADATION.md linguist-generated=true
+skills/*/references/QUALITY.md     linguist-generated=true
+skills/*/references/LMTY.md        linguist-generated=true
+skills/*/references/INTERNAL.md    linguist-generated=true

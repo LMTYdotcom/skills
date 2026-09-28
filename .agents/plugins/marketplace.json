@@ -1,0 +1,23 @@
+{
+  "name": "lmty-plugins",
+  "interface": {
+    "displayName": "LMTY"
+  },
+  "plugins": [
+    {
+      "name": "lmty",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Business & Operations",
+      "interface": {
+        "displayName": "Competitive Skills by LMTY"
+      }
+    }
+  ]
+}

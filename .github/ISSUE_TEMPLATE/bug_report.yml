@@ -1,0 +1,107 @@
+name: Bug report
+description: A skill ran when it should not have, made something up, or gave the wrong kind of answer
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Issues are public.** Remove credentials, customer names, and anything else confidential before submitting.
+
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - competitive-asset-audit
+        - competitive-battlecard
+        - competitive-deal-prep
+        - competitive-deep-dive
+        - competitive-enablement-refresh
+        - competitive-executive-market-brief
+        - competitive-launch-readiness
+        - competitive-market-briefing
+        - competitive-market-shift-analysis
+        - competitive-messaging-audit
+        - competitive-objection-response
+        - competitive-poc-rfp-plan
+        - competitive-positioning
+        - competitive-pricing-packaging-review
+        - competitive-roadmap-review
+        - competitive-win-loss-analysis
+        - Not sure / more than one
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: Where were you using it?
+      options:
+        - Claude Code
+        - Claude desktop app
+        - Codex CLI
+        - Codex desktop app
+        - ChatGPT (web or desktop)
+        - GitHub Copilot CLI
+        - Cursor
+        - Gemini CLI
+        - Other (say which below)
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Which model were you using?
+      description: For example, Claude Sonnet, GPT-5, or Not sure.
+
+  - type: dropdown
+    id: lmty
+    attributes:
+      label: Was LMTY connected?
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: request
+    attributes:
+      label: What you asked
+      description: As close to word-for-word as you can share. Replace company names if you need to.
+    validations:
+      required: true
+
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: Which skill answered (if you can tell), and what was wrong with it. Quote the relevant part.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: If you tried it more than once, how often did it happen?
+      description: If you tried the same prompt again, tell us whether the problem repeated.
+      options:
+        - I only tried once
+        - Sometimes
+        - Every time
+        - Not sure
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release you installed (for example 1.0.0), or roughly when you installed it.

@@ -1,0 +1,17 @@
+globs:
+  - "**/*.md"
+
+config:
+  default: true
+  line-length: false
+  first-line-heading: false
+  blanks-around-lists: false
+  no-duplicate-heading:
+    siblings_only: true
+  no-inline-html:
+    allowed_elements: [date, competitor, product, name, n, x, details, summary]
+  no-emphasis-as-heading: false
+  ol-prefix:
+    style: ordered
+  table-column-style:
+    style: compact

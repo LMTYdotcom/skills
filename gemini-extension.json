@@ -1,0 +1,10 @@
+{
+  "name": "lmty",
+  "version": "1.0.0",
+  "description": "AI skills for competitive GTM work across market intelligence, positioning, pricing, launches, sales enablement, competitive deals, win/loss, messaging and product planning. Works standalone and uses current competitors, market history and evidence when LMTY is connected.",
+  "mcpServers": {
+    "lmty": {
+      "httpUrl": "https://mcp.lmty.com/mcp"
+    }
+  }
+}

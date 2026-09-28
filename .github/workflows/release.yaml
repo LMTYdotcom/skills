@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Build and validate
+        run: |
+          pip install pyyaml
+          python3 scripts/build_skills.py
+          git diff --quiet || { echo "::error::generated files out of date"; exit 1; }
+          python3 scripts/validate_skills.py
+
+      - name: Package
+        run: python3 scripts/package_release.py --check-tag "${GITHUB_REF_NAME}"
+
+      # Everything under this version's `## [X.Y.Z] - date` heading, up to
+      # the next heading or the link definitions at the foot.
+      - name: Release notes from CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\] - " { on = 1; next }
+            on && /^## / { exit }
+            on && /^\[[^]]+\]: / { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "::error::no CHANGELOG.md section for $version"; exit 1; }
+
+      # Exactly one asset, by name. Gemini CLI only uses a generic asset
+      # when it is the only one, so a second file would break its installs.
+      # Releases are immutable: draft first so the asset is attached before
+      # the release is locked, then publish.
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "dist/lmty-${GITHUB_REF_NAME#v}.zip" \
+            --title "Competitive Skills by LMTY ${GITHUB_REF_NAME#v}" \
+            --notes-file notes.md \
+            --verify-tag \
+            --draft
+          gh release edit "$GITHUB_REF_NAME" --draft=false

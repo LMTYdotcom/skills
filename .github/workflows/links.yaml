@@ -1,0 +1,29 @@
+name: Links
+
+on:
+  pull_request:
+    paths: ["**/*.md"]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --accept 200..=204,429
+            --exclude 'skills\.sh'
+            --exclude 'github\.com/LMTYdotcom/skills/security'
+            --exclude-path '.github/ISSUE_TEMPLATE'
+            './**/*.md'
+          fail: true

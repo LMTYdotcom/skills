@@ -1,0 +1,62 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "lmty",
+  "version": "1.0.0",
+  "description": "AI skills for competitive GTM work across market intelligence, positioning, pricing, launches, sales enablement, competitive deals, win/loss, messaging and product planning. Works standalone and uses current competitors, market history and evidence when LMTY is connected.",
+  "author": {
+    "name": "LMTY",
+    "email": "contact@lmty.com",
+    "url": "https://lmty.com"
+  },
+  "homepage": "https://lmty.com",
+  "repository": "https://github.com/LMTYdotcom/skills",
+  "license": "MIT",
+  "keywords": [
+    "competitive",
+    "competitive-intelligence",
+    "market-intelligence",
+    "gtm",
+    "go-to-market",
+    "pmm",
+    "product-marketing",
+    "competitor-analysis",
+    "positioning",
+    "pricing",
+    "battlecard",
+    "launch",
+    "sales-enablement",
+    "sales",
+    "objection-handling",
+    "deal-prep",
+    "win-loss",
+    "messaging",
+    "roadmap",
+    "lmty"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Competitive Skills by LMTY",
+        "shortDescription": "AI skills for competitive GTM",
+        "longDescription": "Bring the market context from LMTY into your AI conversations. Explore your tracked competitors, review changes in pricing, packaging, products and positioning, and look back at how your market has evolved. Use the supporting evidence to understand what changed and inform your next move. Start with the research and history already in LMTY when preparing for a competitive deal, reviewing your positioning or catching up on your market. Works with your LMTY account and is read-only. It reads your LMTY data and changes nothing.",
+        "developerName": "LMTY",
+        "category": "Business & Operations",
+        "capabilities": [
+          "Interactive",
+          "Read"
+        ],
+        "websiteURL": "https://lmty.com",
+        "privacyPolicyURL": "https://lmty.com/privacy",
+        "termsOfServiceURL": "https://lmty.com/terms",
+        "defaultPrompt": [
+          "Build a battlecard for us against our main competitor",
+          "Pressure-test our positioning against our top competitors",
+          "Give me this week's competitive briefing"
+        ],
+        "brandColor": "#000000",
+        "logo": "./assets/logo.png",
+        "composerIcon": "./assets/logo.png"
+      }
+    }
+  }
+}

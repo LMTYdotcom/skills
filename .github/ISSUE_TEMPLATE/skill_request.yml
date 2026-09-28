@@ -1,0 +1,36 @@
+name: Skill request
+description: A competitive or go-to-market task you want a skill to handle
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Issues are public.** Remove credentials, customer names, and anything else confidential before submitting.
+
+  - type: textarea
+    id: job
+    attributes:
+      label: The task
+      description: What would someone ask for, in their own words? Three or four example requests are ideal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: What should it produce?
+      description: What should the finished output look like, and who would use it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: overlap
+    attributes:
+      label: Nearest existing skill
+      description: Which existing skill comes closest today, and where does it stop being the right tool?
+
+  - type: textarea
+    id: failure
+    attributes:
+      label: How it goes wrong
+      description: The specific way an agent gets this task wrong without guidance. That is usually the most useful part of a skill.
