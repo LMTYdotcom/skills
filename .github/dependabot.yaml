@@ -5,3 +5,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
+
+  # scripts/requirements.txt is compiled from requirements.in with hashes;
+  # Dependabot re-runs pip-compile and keeps the hashes current.
+  - package-ecosystem: pip
+    directory: /scripts
+    schedule:
+      interval: monthly

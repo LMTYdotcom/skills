@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: "3.14"
 
-      - run: pip install pyyaml
+      - run: pip install --require-hashes -r scripts/requirements.txt
 
       - name: Regenerate everything derived from a source
         run: python3 scripts/build_skills.py
@@ -73,7 +73,7 @@ jobs:
         with:
           python-version: "3.14"
 
-      - run: pip install check-jsonschema
+      - run: pip install --require-hashes -r scripts/requirements.txt
 
       - name: Agent Plugins 1.0.0
         run: |
@@ -188,7 +188,7 @@ jobs:
       # before openai/codex removed the script; there is no newer one.
       - name: OpenAI's plugin validator
         run: |
-          pip install pyyaml check-jsonschema
+          pip install --require-hashes -r scripts/requirements.txt
           base=https://raw.githubusercontent.com/openai/codex/84aa75204ad604bcf498df180d128181c89b2f0b/codex-rs/skills/src/assets/samples/plugin-creator/scripts
           curl -fsSL "$base/validate_plugin.py" -o /tmp/validate_plugin.py
           curl -fsSL "$base/identifier_validation.py" -o /tmp/identifier_validation.py

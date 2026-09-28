@@ -18,6 +18,8 @@ assets/                      plugin artwork used by the client listings
 scripts/build_skills.py      generates everything derived from a source (below)
 scripts/validate_skills.py   the gate; CI runs it on every pull request
 scripts/package_release.py   builds dist/lmty-<version>.zip
+scripts/requirements.in      the Python tools the scripts and CI need; edit this one
+scripts/requirements.txt     compiled from it with hashes (generated)
 plugin.json                  the Agent Plugins manifest and the pack version; edit this one
 mcp.json .mcp.json           the LMTY MCP server (generated)
 .claude-plugin/              Claude Code manifest and marketplace (generated)
@@ -95,7 +97,7 @@ along with the workflow, Dependabot and issue-form files. To run the
 same checks locally:
 
 ```bash
-pip install check-jsonschema
+pip install -r scripts/requirements.txt
 check-jsonschema --schemafile https://agent-plugins.org/schemas/1.0.0/plugin.schema.json plugin.json
 check-jsonschema --schemafile https://agent-plugins.org/schemas/1.0.0/mcp.schema.json mcp.json
 check-jsonschema --builtin-schema vendor.github-workflows .github/workflows/*.yaml
@@ -149,9 +151,17 @@ python3 scripts/build_skills.py       # vendor shared-references, regenerate eve
 python3 scripts/validate_skills.py    # must pass before you open a PR
 ```
 
-Python 3.10 or later. PyYAML is optional but recommended
-(`pip install pyyaml`): with it the validator parses every frontmatter
-as real YAML, which is what the skills CLI does.
+Python 3.10 or later. `pip install -r scripts/requirements.txt` installs
+PyYAML and check-jsonschema, the only tools the scripts and CI use.
+PyYAML is optional but recommended: with it the validator parses every
+frontmatter as real YAML, which is what the skills CLI does.
+
+`requirements.txt` is compiled from `requirements.in` by pip-compile,
+with a hash for every package, and CI installs with `--require-hashes`
+so a substituted package fails the build. To add or change a tool, edit
+`requirements.in` and run
+`pip-compile --generate-hashes --strip-extras scripts/requirements.in`;
+Dependabot keeps the compiled file current otherwise.
 
 `validate_skills.py` fails on: a `plugin.json` field outside the Agent
 Plugins schema, a name that breaks its rules or the OpenAI directory's,
