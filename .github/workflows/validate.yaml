@@ -160,14 +160,15 @@ jobs:
         with:
           python-version: "3.14"
 
-      # Pinned to a commit; bump deliberately.
-      - name: Install the reference validator
-        run: pip install "git+https://github.com/agentskills/agentskills.git@f130f348f502d9804278a617f86929846896d2e9#subdirectory=skills-ref"
+      # skills-ref, the reference validator from agentskills.io, comes from
+      # the same hash-pinned lock as the other tools. Invoked as a module
+      # because its console script has been renamed between releases.
+      - run: pip install --require-hashes -r scripts/requirements.txt
 
       - name: Every skill conforms to the spec
         run: |
           for d in skills/*/; do
-            skills-ref validate "$d"
+            python3 -m skills_ref.cli validate "$d"
           done
 
   codex:

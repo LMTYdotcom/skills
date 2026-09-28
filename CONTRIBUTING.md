@@ -151,10 +151,10 @@ python3 scripts/build_skills.py       # vendor shared-references, regenerate eve
 python3 scripts/validate_skills.py    # must pass before you open a PR
 ```
 
-Python 3.10 or later. `pip install -r scripts/requirements.txt` installs
-PyYAML and check-jsonschema, the only tools the scripts and CI use.
-PyYAML is optional but recommended: with it the validator parses every
-frontmatter as real YAML, which is what the skills CLI does.
+Python 3.11 or later. `pip install -r scripts/requirements.txt` installs
+PyYAML, check-jsonschema and skills-ref, the only tools the scripts and
+CI use. PyYAML is optional but recommended: with it the validator parses
+every frontmatter as real YAML, which is what the skills CLI does.
 
 `requirements.txt` is compiled from `requirements.in` by pip-compile,
 with a hash for every package, and CI installs with `--require-hashes`
