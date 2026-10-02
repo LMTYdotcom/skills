@@ -63,7 +63,7 @@ sources behind each claim.
 | Asks who "we" are and which competitor | Already knows your product and your competitor set |
 | Researches a snapshot, dated today | Reads tracked market state with a history of changes |
 | "Not observed" | "Not observed, last checked on `<date>`" |
-| Sources are whatever it found this session | Every claim carries its sources and how fresh they are |
+| Sources are whatever it found this session | Every finding links back to its public source, with when LMTY observed it. |
 
 [LMTY](https://lmty.com) tracks a product's competitors and keeps a current
 report plus a log of what moved.
