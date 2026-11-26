@@ -19,7 +19,7 @@ Every requirements list has an author and a history. Read it for:
 
 The four classes serve different purposes:
 
-- **Mandatory** is the buyer's word, not the team's. Pass/fail in their scoring. One the home product meets is a fast proof; one it does not meet natively is the no-go condition, and calling it "differentiating" because the competitor wins it is how a team talks itself into an evaluation it has already lost.
+- **Mandatory** is the buyer's word, not the team's. Pass/fail in their scoring. One the home product meets is a fast proof; one it does not meet natively is the no-go condition, and calling it "differentiating" because the competitor wins it is how a team talks itself into an evaluation it has already lost. One whose fit only the buyer can rule on stays mandatory and becomes a question for the next call: the plan marks the fit "for the buyer to rule on" and never writes "yes".
 - **Table stakes** get proved fast and without drama. Losing one is disqualifying; winning one earns nothing.
 - **Differentiators** get the proof plan, the demonstration time, and the questions. They are where the evaluation is decided.
 - **Irrelevant** criteria are the trap for the home team. A product that wins five criteria the buyer does not weigh has won nothing, and the time spent showing them is time not spent on the two that decide it.
@@ -32,7 +32,7 @@ Do not put a criterion in the proof plan until both sides are verified as far as
 
 Home side: approved documentation, the actual limits, what a live demonstration can and cannot show. A capability that exists but cannot be demonstrated in the buyer's environment is a claim for evaluation purposes.
 
-Competitor side: current evidence, with confidence and date. In a POC the buyer will see the competitor's product. A plan built on "they can't do X" that turns out wrong in week two costs more than the criterion.
+Competitor side: current evidence, with confidence and date, saying who states it. The vendor's own page is the vendor's claim, however official; "verified" is kept for an independent party, a register or the buyer's own test. In a POC the buyer will see the competitor's product. A plan built on "they can't do X" that turns out wrong in week two costs more than the criterion.
 
 ## Proof events
 
@@ -76,8 +76,10 @@ Written before the evaluation, they protect the team from the sunk-cost decision
 - a mandatory requirement the home product does not meet and no acceptable workaround exists
 - the evaluation is structured around the competitor's strengths and the buyer declines to adjust scope
 - the timeline cannot accommodate the proof events that matter
-- the decision-maker has signalled the decision is made
+- the decision-maker has signaled the decision is made
 - the buyer wants claims the team cannot prove and will not accept the supportable version
+
+These are the kinds of condition, not a list to copy. A plan lists only the conditions the evidence for this evaluation supports, each with its source; with none evidenced it says "none established yet".
 
 Qualifying out of an evaluation the team would lose is a good outcome of this skill.
 

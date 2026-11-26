@@ -1,4 +1,4 @@
-# Competitor Deep Dive Methodology
+# Competitive Deep Dive Methodology
 
 ## Research as a reusable baseline
 

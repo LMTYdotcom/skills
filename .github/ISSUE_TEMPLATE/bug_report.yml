@@ -12,6 +12,19 @@ body:
     attributes:
       label: Skill
       options:
+        - company-briefing
+        - company-claim-check
+        - company-customer-map
+        - company-event-prep
+        - company-hiring-signals
+        - company-in-their-own-words
+        - company-portfolio-brief
+        - company-post-drafts
+        - company-pricing-history
+        - company-profile-check
+        - company-prospect-stack
+        - company-relationship-map
+        - company-security-claims
         - competitive-asset-audit
         - competitive-battlecard
         - competitive-deal-prep
@@ -28,6 +41,10 @@ body:
         - competitive-pricing-packaging-review
         - competitive-roadmap-review
         - competitive-win-loss-analysis
+        - social-competitor-change-impact
+        - social-keyword-check
+        - social-listening-brief
+        - social-quote-finder
         - Not sure / more than one
     validations:
       required: true

@@ -1,4 +1,4 @@
-# Competitive Skills by LMTY
+# LMTY Skills
 
 [![Installs](https://skills.sh/b/LMTYdotcom/skills)](https://skills.sh/LMTYdotcom/skills)
 [![Validate](https://github.com/LMTYdotcom/skills/actions/workflows/validate.yaml/badge.svg)](https://github.com/LMTYdotcom/skills/actions/workflows/validate.yaml)
@@ -6,28 +6,30 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14999/badge)](https://www.bestpractices.dev/projects/14999)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Use your AI assistant for competitive work you already do: researching
-competitors and market shifts, building positioning and messaging, reviewing
-pricing and launches, creating battlecards, preparing deals, analyzing wins
-and losses, and keeping sales enablement current.
+Use your AI assistant for work you already do: researching a company
+before a meeting, following competitors and market shifts, building
+positioning and messaging, reviewing pricing and launches, preparing for
+competitive deals, analyzing wins and losses, and seeing what people say
+about you in public.
 
-Add the pack once, then ask in plain English, "Give me this week's
-competitive briefing." Your assistant selects the matching skill and follows
+Add the pack once, then ask in plain English, "What does Northwind do?"
+or "Give me this week's competitive briefing." Your assistant selects the matching skill and follows
 a repeatable method for completing the work. The skills work in Claude Code,
 ChatGPT and Codex, GitHub Copilot, Cursor, Gemini CLI and any assistant that
 supports [Agent Skills](https://agentskills.io); the pack itself is an
 [Agent Plugin](https://agent-plugins.org).
 
-Every skill works on its own. Connect [LMTY](https://lmty.com) and each one
-starts from your tracked competitors, kept current with what has changed and
-the evidence behind it, instead of a blank page.
+The competitive skills work on their own. The company research skills read
+LMTY's public profiles, which need no account. Connect your
+[LMTY](https://lmty.com) account to use your tracked competitors, market
+history, and social listening data in the skills that support them.
 
 ## What you can ask
 
 | Skill | Ask something like | You get |
 | --- | --- | --- |
 | [`competitive-market-briefing`](skills/competitive-market-briefing/SKILL.md) | "Give me this week's competitive briefing." | A calm digest of what actually changed, and what to watch |
-| [`competitive-deep-dive`](skills/competitive-deep-dive/SKILL.md) | "Get me fully up to speed on Northwind." | One competitor, understood and evidenced |
+| [`competitive-deep-dive`](skills/competitive-deep-dive/SKILL.md) | "Get me fully up to speed on Northwind and how it stacks up against us." | One competitor against your product, understood and evidenced |
 | [`competitive-market-shift-analysis`](skills/competitive-market-shift-analysis/SKILL.md) | "Everyone is adding AI. Is this a real shift or just noise?" | A verdict: noise, one move, an emerging shift, or a new expectation |
 | [`competitive-executive-market-brief`](skills/competitive-executive-market-brief/SKILL.md) | "Board meeting Friday. What market changes could blindside me?" | What leadership must decide, with the uncertainty shown |
 | [`competitive-positioning`](skills/competitive-positioning/SKILL.md) | "Our competitors all sound like us now. Pressure-test our positioning." | A position tested against the alternatives buyers really consider |
@@ -42,6 +44,39 @@ the evidence behind it, instead of a blank page.
 | [`competitive-asset-audit`](skills/competitive-asset-audit/SKILL.md) | "Audit our competitive materials. Which claims are stale?" | Every competitive claim, marked and ranked by exposure |
 | [`competitive-win-loss-analysis`](skills/competitive-win-loss-analysis/SKILL.md) | "Why are we losing to Northwind?" | What buyers actually said, counted, with the exceptions kept |
 | [`competitive-roadmap-review`](skills/competitive-roadmap-review/SKILL.md) | "Competitors keep adding this. Does it matter for our roadmap?" | Product questions from market and customer evidence, not a copied feature list |
+
+The skills above work from your own product and its competitors. The ones
+below work from LMTY's public profiles of companies, products and people,
+which are free to read and need no account:
+
+| Skill | Ask something like | You get |
+| --- | --- | --- |
+| [`company-briefing`](skills/company-briefing/SKILL.md) | "What does Northwind do? I have a call with them in an hour." | One page on a company, product or person, every line graded and sourced |
+| [`company-pricing-history`](skills/company-pricing-history/SKILL.md) | "How has Northwind's pricing changed over the last year?" | Every price and plan move, dated, and the pattern they form |
+| [`company-customer-map`](skills/company-customer-map/SKILL.md) | "Who uses Northwind, and in which industries?" | Known customers by segment, with how each one is known |
+| [`company-hiring-signals`](skills/company-hiring-signals/SKILL.md) | "What is Northwind hiring for right now?" | Open roles and leadership moves, and what they are consistent with |
+| [`company-relationship-map`](skills/company-relationship-map/SKILL.md) | "Who backs Northwind, and who do they partner with?" | Investors, owners, partners and rivals, each tie attributed |
+| [`company-in-their-own-words`](skills/company-in-their-own-words/SKILL.md) | "How does Northwind describe itself now?" | Their taglines, category, proof points and leaders' quotes, verbatim |
+| [`company-event-prep`](skills/company-event-prep/SKILL.md) | "Northwind's conference is next month. What should we have ready?" | Their coming dates, what happened last time, and a prep list |
+| [`company-claim-check`](skills/company-claim-check/SKILL.md) | "Their deck says 10,000 customers. Is that true?" | A verdict on the evidence: who says it, since when, how far it holds |
+| [`company-prospect-stack`](skills/company-prospect-stack/SKILL.md) | "What tools does Globex already use?" | An account's known tools, sorted into what to mention and what to ask |
+| [`company-profile-check`](skills/company-profile-check/SKILL.md) | "What does AI say about Acme?" | Your own public record: what is missing, stale or wrong, and where to fix it |
+| [`company-security-claims`](skills/company-security-claims/SKILL.md) | "We're reviewing Northwind as a vendor. Which certifications does it claim?" | A checklist of public security evidence: who states what, incidents counted once, and what to ask the vendor for |
+| [`company-post-drafts`](skills/company-post-drafts/SKILL.md) | "What could we post about Northwind's recent developments?" | Two or three angles from its dated events, and a draft for review with a source on every claim |
+| [`company-portfolio-brief`](skills/company-portfolio-brief/SKILL.md) | "Which of my portfolio companies need my attention this week?" | The companies on your list with a dated development, the evidence, and one follow-up question each |
+
+The `social-` skills read what people say in public: the posts LMTY
+collects for your own product and its competitors. That needs an LMTY
+account with Social Listening on. Two of them, `social-quote-finder` and
+`social-listening-brief`, also have a free form that reads the public
+posts on a product's profile and needs no account:
+
+| Skill | Ask something like | You get |
+| --- | --- | --- |
+| [`social-competitor-change-impact`](skills/social-competitor-change-impact/SKILL.md) | "Northwind closed its cheapest plan. How are their customers reacting?" | The posts about the change, sorted into reported experience, stated intent and speculation |
+| [`social-keyword-check`](skills/social-keyword-check/SKILL.md) | "Are we still tracking the right keywords?" | Names and handles your keywords miss, keywords that catch little or the wrong posts, and what to change |
+| [`social-quote-finder`](skills/social-quote-finder/SKILL.md) | "Who is saying nice things about Acme this month?" | Posts that praise your product, quoted exactly, as leads to follow up, with what is not verified about each author |
+| [`social-listening-brief`](skills/social-listening-brief/SKILL.md) | "What are people saying about us this week?" | Volume for you and each competitor, the themes the counts show, and the few things that need attention |
 
 You do not pick a skill; the right one is chosen for you. If a request needs
 more than one, the assistant does the part that fits and tells you which
@@ -77,6 +112,31 @@ here uses it from then on.
 
 No skill needs LMTY to run, and none will refuse work without it. If you
 never connect, the skills research from scratch and say so.
+
+The `company-` skills read LMTY's public profiles, which need no account
+and no sign-in. If LMTY is not connected when you run one, it tells you
+once how to connect and offers to work from web research instead.
+
+The `social-` skills read the posts LMTY collects for a signed-in product.
+Without that, `social-quote-finder` and `social-listening-brief` take
+their free form, which reads the public posts on a product's profile, and
+say once what an account would add. The other two tell you once what is
+missing and offer what they can still do.
+
+## Use a skill without installing anything
+
+Each `company-` and `social-` skill, and every `competitive-` skill but
+the deep dive, positioning and win/loss analysis, also has a short form in
+[`playbooks/`](playbooks): a prompt of a few dozen lines that works in any
+assistant with the LMTY server connected. A `competitive-` playbook reads
+your LMTY account, so it needs you signed in, and says what to paste. Copy one, fill in the
+placeholders in braces, and paste it in. A playbook is also what to give a
+scheduled task or a bot as its instructions: each says how often it is worth
+running, and the ones worth repeating say what to lead with on a repeat
+run.
+
+The installed skill is the full method, with its reference files and output
+template. The playbook is the same method with the detail left out.
 
 Connecting sends your requests to LMTY's server. LMTY's
 [Privacy policy](https://lmty.com/privacy) and
@@ -209,7 +269,7 @@ Releases are immutable and signed. To check that a zip is the one this
 repository published:
 
 ```bash
-gh release verify-asset v1.0.0 lmty-1.0.0.zip -R LMTYdotcom/skills
+gh release verify-asset v1.1.0 lmty-1.1.0.zip -R LMTYdotcom/skills
 ```
 
 </details>
@@ -235,13 +295,13 @@ it is the intended default.
 To pin to a release instead, name it at install time:
 
 ```bash
-npx skills add LMTYdotcom/skills#v1.0.0
-gemini extensions install https://github.com/LMTYdotcom/skills --ref=v1.0.0
-codex plugin marketplace add LMTYdotcom/skills --ref v1.0.0
+npx skills add LMTYdotcom/skills#v1.1.0
+gemini extensions install https://github.com/LMTYdotcom/skills --ref=v1.1.0
+codex plugin marketplace add LMTYdotcom/skills --ref v1.1.0
 ```
 
 In the skills CLI, `#` takes a tag, branch or commit, while `@` picks a
-skill, so `LMTYdotcom/skills#v1.0.0@competitive-battlecard` is one skill
+skill, so `LMTYdotcom/skills#v1.1.0@competitive-battlecard` is one skill
 at one version. `npx skills update` then keeps re-checking the ref you
 pinned rather than moving you forward.
 
@@ -274,11 +334,14 @@ these skills exists to stop one of them.
 
 ## How they were tested
 
-Every skill was run against three models from different vendors, with a
-fourth model grading the output against written criteria, and then run live
-in Claude Code against the real LMTY server. Across the pack, the right
-skill is chosen for 95% of example requests, including the ones written to
-sit on the boundary between two neighbors.
+Every skill was tested against three models from different vendors, with a
+fourth model grading each answer against written checks. Both versions of
+each answer had the same facts from LMTY; only the skill differed. On the
+first run, answers passed 93% to 94% of their checks with the skill,
+against 61% to 69% without it. The right skill was chosen for 92% to 98% of
+example requests, depending on the skill family, including requests written
+to sit on the boundary between two skills. The reworked and new skills were
+also run live in Claude Code, Codex, and Grok Build in November 2026.
 
 The test criteria are kept out of this repository on purpose: a skill should
 not ship with its own answer key.

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.lmty/lmty",
+  "title": "LMTY",
+  "description": "Read-only access to your tracked competitors, market history, observed changes and sourced evidence.",
+  "version": "1.1.0",
+  "websiteUrl": "https://lmty.com",
+  "repository": {
+    "url": "https://github.com/LMTYdotcom/skills",
+    "source": "github",
+    "id": "1393471039"
+  },
+  "icons": [
+    {
+      "src": "https://lmty.com/apple-icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "180x180"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.lmty.com/mcp"
+    }
+  ]
+}

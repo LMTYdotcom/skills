@@ -61,7 +61,7 @@ Rate each 0-2, then explain rather than hiding behind the number.
 7. Pricing/packaging coherence
 8. Cross-functional readiness
 
-The score is a diagnostic aid, not the output itself.
+The score is a diagnostic aid, not the output itself. Do not print the scores.
 
 ## Launch posture patterns
 
@@ -82,7 +82,7 @@ Recommended posture:
 Characteristics:
 - clear differentiated outcome
 - proof exists or can be demonstrated
-- few credible equivalents
+- few credible equivalents observed in the sources read, as of a stated date; silence about a competitor is not evidence that it lacks the capability
 
 Recommended posture:
 - teach the new possibility
@@ -96,13 +96,13 @@ Characteristics:
 
 Recommended posture:
 - focus on proof and integrated value
-- avoid defensive "we had it first" messaging unless chronology itself matters
+- avoid defensive "we had it first" messaging unless chronology itself matters, and then only on dates that are each event's own, never on when LMTY recorded it
 
 ### Expectation-creating launch
 
 Characteristics:
 - adjacent players or new technology create a new buyer expectation
-- direct competitors may not yet offer the capability
+- no direct competitor offer of the capability observed in the sources read
 
 Recommended posture:
 - explain the job and why now

@@ -4,7 +4,7 @@
 
 ## Checklist
 
-- [ ] I edited `shared-references/`, not `skills/*/references/{TRUST,CONTEXT,DEGRADATION,QUALITY,LMTY,INTERNAL}.md`
+- [ ] I edited `shared-references/`, not `skills/*/references/{TRUST,CONTEXT,DEGRADATION,QUALITY,LMTY,INTERNAL,SOCIAL}.md`
 - [ ] `python3 scripts/build_skills.py` then `python3 scripts/validate_skills.py` pass locally
 - [ ] If a skill's scope changed, its `description` changed too
 - [ ] No claims about a real company, product or price were added to a skill or template

@@ -14,7 +14,7 @@ Consider each item on:
 - confidence
 - reversibility
 
-High-consequence, low-confidence issues often belong as research or decision questions rather than recommendations.
+High-consequence, low-confidence issues often belong as research or decision questions rather than recommendations. One unverified voice is below that bar. It goes under "Not yet worth reacting to", with what would settle it.
 
 ## Executive audience variants
 

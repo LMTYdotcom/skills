@@ -10,12 +10,14 @@ ignorePaths:
   - gemini-extension.json
   - mcp.json
   - .mcp.json
+  - server.json
   - skills/*/references/TRUST.md
   - skills/*/references/CONTEXT.md
   - skills/*/references/DEGRADATION.md
   - skills/*/references/QUALITY.md
   - skills/*/references/LMTY.md
   - skills/*/references/INTERNAL.md
+  - skills/*/references/SOCIAL.md
   - LICENSE
 
 words:
@@ -25,8 +27,10 @@ words:
   - deprioritize
   - overclaiming
   - permissioned
+  - reposts
   - unsourced
   - upsold
+  - upvotes
   - watchlist
 
   # The pack, its docs and the wider ecosystem.
@@ -34,6 +38,7 @@ words:
   - frontmatter
   - LMTY
   - LMTYdotcom
+  - modelcontextprotocol
   - streamable
 
   # Identifiers that appear in prose or code: a brand color placeholder, a

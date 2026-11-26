@@ -85,6 +85,9 @@ jobs:
           check-jsonschema --schemafile https://json.schemastore.org/claude-code-plugin-manifest.json .claude-plugin/plugin.json
           check-jsonschema --schemafile https://json.schemastore.org/claude-code-marketplace.json .claude-plugin/marketplace.json
 
+      - name: MCP Registry entry
+        run: check-jsonschema --schemafile https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json server.json
+
       # No published schema; shape is checked in scripts/validate_skills.py.
       - name: Codex marketplace and Gemini extension are JSON
         run: |

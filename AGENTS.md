@@ -5,17 +5,23 @@ This is a pack of Agent Skills. The repository root is the plugin;
 
 ## Rules
 
-- Edit `shared-references/`, never `skills/*/references/{TRUST,CONTEXT,DEGRADATION,QUALITY,LMTY,INTERNAL}.md`.
+- Edit `shared-references/`, never `skills/*/references/{TRUST,CONTEXT,DEGRADATION,QUALITY,LMTY,INTERNAL,SOCIAL}.md`.
   Those are vendored copies; the build overwrites them and the validator
   rejects drift.
+- `references/SOCIAL.md`, the rules for reading public posts, is vendored
+  only into a skill whose `SKILL.md` lists it. Every `social-` skill
+  lists it, and so does any skill whose own files name `list_mentions`,
+  `get_mention_stats`, `list_tracked_keywords` or a profile's `chatter`
+  section. To add or drop it, change the list in `SKILL.md` and run the
+  build.
 - Edit `plugin.json`, never `.claude-plugin/plugin.json`,
   `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`
   or `gemini-extension.json`. Those are generated from it by the build.
   Codex and ChatGPT listing metadata lives in `plugin.json` under
   `extensions.com.openai`; the marketplace name, category and MCP
   endpoint live in `scripts/build_skills.py`.
-- `mcp.json` and `.mcp.json` are generated too. Change the source in
-  `scripts/build_skills.py`, never the output.
+- `mcp.json`, `.mcp.json` and `server.json` are generated too. Change
+  the source in `scripts/build_skills.py`, never the output.
 - Do not add `.codex-plugin/plugin.json`: Codex reads `plugin.json` and
   ignores the legacy file when the extension is present.
 - Skills live only in `skills/`. Do not add a `commands/` directory:
@@ -37,12 +43,19 @@ This is a pack of Agent Skills. The repository root is the plugin;
 - A version bump needs a matching `## X.Y.Z` section in `CHANGELOG.md`.
 - A skill's frontmatter is `name`, `description`, `license: MIT` and
   `metadata` holding exactly `author: LMTY` and `com.lmty.category`,
-  which is `ci`. Do not add `compatibility` or `allowed-tools`: the
+  which follows the name prefix: `ci` for a `competitive-` skill,
+  `company` for a `company-` skill, `social` for a `social-` skill. Do
+  not add `compatibility` or `allowed-tools`: the
   skills have no environment requirement and execute nothing, so either
   would claim something untrue. Any other key makes other clients
   reject the skill.
 - Every file inside a skill must be referenced from its `SKILL.md` in
   backticks. Orphans fail validation.
+- Every skill has a `## Cadence` section. Every `company-` and `social-`
+  skill has a playbook in `playbooks/`, and so does every `competitive-`
+  skill except deep dive, positioning and win/loss, which must say nothing the skill
+  does not: change the skill first, then its playbook. `library.json` is
+  generated from the playbooks; never edit it.
 - Every skill has a row in the README table and an entry in the
   bug-report dropdown.
 - A skill's `description` is what triggers it. If you change what a

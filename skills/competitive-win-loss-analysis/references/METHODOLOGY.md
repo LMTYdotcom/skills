@@ -15,7 +15,7 @@ Every deal has up to two accounts of why:
 
 They are kept in separate columns for the whole analysis. Where they agree, the finding is stronger. Where they disagree, the disagreement is the finding - it usually reveals what the field is teaching itself that buyers do not confirm.
 
-"Price" is the canonical case. It is the most frequent rep-entered loss reason in most CRMs, and buyer evidence in the same deals most often says familiarity, incumbency, a missed requirement, or a security review that never finished. Check every price loss against the buyer column.
+"Price" is the canonical case: one word closes a record, and it is the reason most often entered without buyer evidence behind it. Check every price loss against the buyer column.
 
 ## Counting
 
@@ -23,7 +23,7 @@ A pattern is: *this criterion or theme appears in N of the M deals that have buy
 
 Rules:
 
-- the denominator is deals with buyer evidence, not all deals
+- the denominator is deals with buyer evidence and the outcome the reason explains: a loss reason counts against competitive losses with buyer evidence, a win reason against wins. A no-decision is counted in its own row and in neither
 - record-only deals are reported separately and do not vote
 - a theme mentioned once is a single observation, whatever its vividness
 - exceptions are listed next to the pattern, not in a footnote
@@ -46,6 +46,8 @@ LMTY's change record and the home product's own pricing and product changes are 
 
 Without (1) the change is irrelevant to that deal. Without (2) it is a hypothesis. A competitor's September price cut cannot explain a June loss, and a plausible mechanism is not a buyer saying so.
 
+Test (1) on the change's own date. When LMTY's record gives only the date it recorded the change, or a source gives only the date it reported it, that date is the latest the change can have happened, and the change may have come months earlier. Such a change is never ruled out as coming before a deal: the timing stays open until the change's own date is found.
+
 ## Bias
 
 Every deal evidence set is biased, and the report says how:
@@ -60,11 +62,7 @@ None of this disqualifies the analysis. All of it bounds what it can claim.
 
 ## Locating the cause
 
-Buyer evidence usually distributes across a few familiar causes. For each - product, positioning, sales execution, price, implementation and switching, trust and compliance, incumbency - the report shows where the buyer column puts weight and where the rep column does. The columns disagree most often on:
-
-- price (rep) versus familiarity or switching cost (buyer)
-- product gap (rep) versus a requirement the team never surfaced (buyer)
-- "they lied about their product" (rep) versus the buyer's actual criteria (buyer)
+For each of the familiar causes the evidence touches - product, positioning, sales execution, price, implementation and switching, trust and compliance, incumbency - the report shows where the buyer column puts weight and where the rep column does, and where they disagree. Which causes they disagree on is a finding of this cohort, not something to expect in advance.
 
 ## Hypotheses instead of causes
 

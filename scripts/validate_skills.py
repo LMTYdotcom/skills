@@ -15,7 +15,10 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_skills import MARKETPLACE, OPENAI_NAMESPACE, render_manifests
+from build_skills import FILES, MARKETPLACE, MCP_URL, OPENAI_NAMESPACE, OPTIONAL_FILES, render_manifests
+
+from playbooks import load as load_playbooks
+from playbooks import render_library
 
 try:
     import yaml  # optional locally; CI installs it
@@ -51,7 +54,30 @@ SKILL_FIELDS_UNUSED = ("compatibility", "allowed-tools")
 # `author` survives a single-skill install, which has no LICENSE or
 # README. `category` is namespaced to avoid Claude Code's and Codex's.
 SKILL_METADATA = {"author", "com.lmty.category"}
-SKILL_CATEGORIES = {"ci"}
+# A skill's family is its name prefix, and each family has one category:
+# `competitive-` works from the user's own product and its tracked
+# competitors, `company-` from public profiles of any company, `social-`
+# from the public posts LMTY collects for a signed-in user's product.
+SKILL_FAMILIES = {"competitive": "ci", "company": "company", "social": "social"}
+SKILL_CATEGORIES = set(SKILL_FAMILIES.values())
+# The sentence a family's "say so once" line is keyed on: in
+# shared-references/lmty.md for public profiles, in
+# shared-references/social.md for social listening. A family built on a
+# part of LMTY carries its sentence and no other family does;
+# `competitive-` skills expect nothing.
+EXPECTS = {
+    "company": "expects LMTY's public profiles",
+    "social": "expects LMTY's social listening",
+}
+# How often a skill is worth running: the first words under its Cadence
+# heading, which a playbook's `cadence` and a page's badge repeat.
+CADENCE_STARTS = ("On demand", "Daily", "Weekly", "Monthly", "Quarterly")
+# Families whose skills each have a playbook: a short form that works
+# with only the LMTY server connected. A `competitive-` skill starts from
+# the user's account and their own material: those that a pasted prompt can
+# carry have one, and the three that cannot have none.
+PLAYBOOK_FAMILIES = {"company", "social"}
+WITHOUT_PLAYBOOK = {"competitive-deep-dive", "competitive-positioning", "competitive-win-loss-analysis"}
 
 # What Codex reads from extensions.com.openai (agent_plugin_manifest.rs)
 # and what its submission validator accepts inside `interface`.
@@ -94,15 +120,48 @@ VENDORED = {
     "LMTY.md": "lmty.md",
     "INTERNAL.md": "internal-context.md",
 }
+# Must match OPTIONAL_FILES in build_skills.py. A skill carries one of
+# these only when its SKILL.md lists the copy.
+VENDORED_OPTIONAL = {
+    "SOCIAL.md": "social.md",
+}
+# The reference a skill that reads public posts carries, and the families
+# whose every skill does.
+POSTS_REFERENCE = "references/SOCIAL.md"
+POSTS_FAMILIES = {"social"}
+# What only that reference explains: the tools that read an account's
+# posts, and a profile's posts section. The section is matched in
+# backticks or beside its field or the word "section", because plain
+# "chatter" is also a grade.
+POSTS_RE = re.compile(
+    r"\b(?:list_mentions|get_mention_stats|list_tracked_keywords)\b"
+    r"|`chatter`|\bchatterCounts\b|\bchatter section\b"
+)
 
 # The pack is versioned once, in plugin.json.
 FORBIDDEN_METADATA = ("version",)
 
 errors = []
 
+for mine, theirs, label in ((VENDORED, FILES, "FILES"), (VENDORED_OPTIONAL, OPTIONAL_FILES, "OPTIONAL_FILES")):
+    if {src: dest for dest, src in mine.items()} != theirs:
+        errors.append(
+            f"scripts/validate_skills.py: its list of vendored references does not match {label} in build_skills.py"
+        )
+
 for f in sorted(SHARED_REFERENCES.iterdir()):
-    if f.is_file() and f.name not in VENDORED.values():
-        errors.append(f"shared-references/{f.name}: not in FILES in build_skills.py, so no skill ships it")
+    if f.is_file() and f.name not in VENDORED.values() and f.name not in VENDORED_OPTIONAL.values():
+        errors.append(
+            f"shared-references/{f.name}: not in FILES or OPTIONAL_FILES in build_skills.py, so no skill ships it"
+        )
+
+# A shared file is read once per conversation, so a read that stopped
+# short is reused by every later skill. The fixed last line is what lets a
+# model tell a whole read from a cut one.
+for dest, src in {**VENDORED, **VENDORED_OPTIONAL}.items():
+    path = SHARED_REFERENCES / src
+    if path.is_file() and not path.read_text(encoding="utf-8").endswith(f"\n\nEnd of {dest}.\n"):
+        errors.append(f"shared-references/{src}: must end with the line `End of {dest}.`, after a blank line")
 
 
 def _https(v: object) -> bool:
@@ -465,6 +524,17 @@ for d in skill_dirs:
                     f"{d.name}: metadata.com.lmty.category {cat!r} is not one of "
                     f"{sorted(SKILL_CATEGORIES)}; a new group is a decision, not a typo"
                 )
+            family = name.split("-", 1)[0]
+            if family not in SKILL_FAMILIES:
+                errors.append(
+                    f"{d.name}: name must start with one of "
+                    f"{sorted(f + '-' for f in SKILL_FAMILIES)}; a new family is a decision, not a typo"
+                )
+            elif cat in SKILL_CATEGORIES and cat != SKILL_FAMILIES[family]:
+                errors.append(
+                    f"{d.name}: metadata.com.lmty.category must be {SKILL_FAMILIES[family]!r} "
+                    f"for a `{family}-` skill, not {cat!r}"
+                )
 
     for key in FORBIDDEN_METADATA:
         if re.search(rf"^  {key}:", fm, re.MULTILINE):
@@ -501,6 +571,60 @@ for d in skill_dirs:
                 "edit shared-references and run scripts/build_skills.py"
             )
 
+    # An optional reference ships only where SKILL.md lists it. A copy
+    # that is not listed is caught above as an unreferenced file.
+    for dest, src in VENDORED_OPTIONAL.items():
+        rel = f"references/{dest}"
+        copy = d / rel
+        if rel not in refs:
+            continue
+        if not copy.exists():
+            errors.append(f"{d.name}: SKILL.md lists {rel} but the copy is missing; run scripts/build_skills.py")
+        elif copy.read_bytes() != (SHARED_REFERENCES / src).read_bytes():
+            errors.append(
+                f"{d.name}: {rel} differs from shared-references/{src}; "
+                "edit shared-references and run scripts/build_skills.py"
+            )
+
+    own_family = name.split("-", 1)[0]
+    carries_posts = POSTS_REFERENCE in refs
+    if own_family in POSTS_FAMILIES and not carries_posts:
+        errors.append(
+            f"{d.name}: a `{own_family}-` skill must list `{POSTS_REFERENCE}` in SKILL.md; "
+            "it holds the rules for reading posts"
+        )
+    if not carries_posts:
+        vendored_names = set(VENDORED) | set(VENDORED_OPTIONAL)
+        for f in sorted(d.rglob("*")):
+            if not f.is_file() or (f.parent.name == "references" and f.name in vendored_names):
+                continue
+            m = POSTS_RE.search(f.read_text(encoding="utf-8", errors="ignore"))
+            if m:
+                errors.append(
+                    f"{d.name}: {f.relative_to(d).as_posix()} names {m.group(0)!r}, a tool or a profile section "
+                    f"that reads public posts, but SKILL.md does not list `{POSTS_REFERENCE}`; a skill that reads "
+                    "posts carries that reference (the grade is written as plain chatter, not in backticks)"
+                )
+
+    for family, sentence in EXPECTS.items():
+        says = sentence in body
+        if family == own_family and not says:
+            errors.append(
+                f"{d.name}: a `{family}-` skill must say it {sentence!r}, "
+                "which is what lets it tell the user what is missing"
+            )
+        elif family != own_family and says:
+            errors.append(
+                f"{d.name}: only a `{family}-` skill may say it {sentence!r}; "
+                "no other skill tells the user what to connect or turn on"
+            )
+
+    cadence = re.search(r"^## Cadence\n\n(.+)$", body, re.MULTILINE)
+    if cadence is None:
+        errors.append(f"{d.name}: missing a `## Cadence` section saying how often the skill is worth running")
+    elif not cadence.group(1).startswith(CADENCE_STARTS):
+        errors.append(f"{d.name}: the Cadence section must begin with one of {list(CADENCE_STARTS)}")
+
     numbers = [int(n) for n in re.findall(r"^### Step (\d+) -", body, re.MULTILINE)]
     if numbers and numbers != list(range(1, len(numbers) + 1)):
         errors.append(f"{d.name}: workflow steps are numbered {numbers}")
@@ -515,7 +639,7 @@ for d in skill_dirs:
 # Hand-offs must point both ways. A skill nothing signposts toward
 # collects its neighbors' requests.
 SKILL_LIKE_RE = re.compile(
-    r"^(competitive|competitor|market|launch|pricing|executive|sales|messaging|roadmap|win-loss|poc)-"
+    r"^(competitive|competitor|company|social|market|launch|pricing|executive|sales|messaging|roadmap|win-loss|poc)-"
 )
 names = {d.name for d in skill_dirs}
 points_to: dict[str, set[str]] = {}
@@ -535,6 +659,28 @@ for name in sorted(names):
             f"{name}: no sibling's 'Do not use this skill when' points to it; "
             "nothing routes requests away from its neighbors toward it"
         )
+
+# ---------------------------------------------------------------------------
+# Playbooks
+
+playbooks, playbook_errors = load_playbooks()
+errors.extend(playbook_errors)
+with_playbook = {str(book.get("skill")) for book in playbooks}
+for name in sorted(names):
+    if name.split("-", 1)[0] in PLAYBOOK_FAMILIES and name not in with_playbook:
+        errors.append(f"{name}: no playbooks/{name}.md; every skill of its family has a short form")
+    if name in WITHOUT_PLAYBOOK and name in with_playbook:
+        errors.append(f"{name}: has a playbook; it depends on material a pasted prompt cannot carry")
+library_path = ROOT / "library.json"
+library_expected = render_library(str(manifest.get("version")), MCP_URL)
+if not library_path.exists():
+    errors.append("library.json: missing; run scripts/build_skills.py")
+elif library_path.read_bytes() != library_expected.encode("utf-8"):
+    errors.append("library.json: differs from what the build generates; run scripts/build_skills.py")
+for book in playbooks:
+    for url in re.findall(r"https?://[^\s`)\"']+", str(book.get("playbook", ""))):
+        if url.rstrip(".,;") != MCP_URL:
+            errors.append(f"{book['_path']}: links {url}; a playbook names only the LMTY server, {MCP_URL}")
 
 # ---------------------------------------------------------------------------
 # README
@@ -561,6 +707,29 @@ for rel, expected in generated.items():
         errors.append(f"{rel}: missing; run scripts/build_skills.py")
     elif path.read_bytes() != expected.encode("utf-8"):
         errors.append(f"{rel}: differs from what the build generates; run scripts/build_skills.py")
+
+# The MCP Registry entry. Its name must sit in the namespace the lmty.com
+# TXT record proves, and the registry rejects a description over 100
+# characters or a remote that is not the public endpoint.
+REGISTRY_NAME_RE = re.compile(r"^[a-zA-Z0-9.-]+/[a-zA-Z0-9._-]+$")
+SERVER_JSON = ROOT / "server.json"
+reg = _load_json(SERVER_JSON, "server.json") if SERVER_JSON.exists() else None
+if reg is not None:
+    tag = "server.json"
+    name = str(reg.get("name", ""))
+    if not REGISTRY_NAME_RE.match(name) or not name.startswith("com.lmty/"):
+        errors.append(f"{tag}: `name` must be `com.lmty/<server>`")
+    desc = reg.get("description")
+    if not _nonempty(desc) or len(desc) > 100:
+        errors.append(f"{tag}: `description` must be 1 to 100 characters")
+    if reg.get("version") != manifest.get("version"):
+        errors.append(f"{tag}: `version` must match plugin.json")
+    remotes = reg.get("remotes")
+    if not isinstance(remotes, list) or [r.get("url") for r in remotes] != [MCP_URL]:
+        errors.append(f"{tag}: `remotes` must list exactly the LMTY server, {MCP_URL}")
+    for i, icon in enumerate(reg.get("icons") or []):
+        if not _https(icon.get("src")):
+            errors.append(f"{tag}: icons[{i}].src must be an https URL")
 
 CLAUDE_MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
 cm_claude = _load_json(CLAUDE_MANIFEST, ".claude-plugin/plugin.json") if CLAUDE_MANIFEST.exists() else None

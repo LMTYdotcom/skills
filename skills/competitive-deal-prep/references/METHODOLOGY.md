@@ -26,6 +26,8 @@ A competitor is in the deal when:
 - the opportunity record names it, on a stated date
 - the buyer is currently using it (the incumbent is always in the deal)
 
+An incumbent is evidence only when the buyer said so or the record shows the account's own side (its site, its job ad). A vendor listing the account on its customers page is the vendor's claim: list it under assumed, and make it a question.
+
 A competitor is *not* in the deal because it is the market leader, because it usually is, or because the rep expects it. List assumed competitors separately.
 
 When several are active, the prep covers all of them against the confirmed criteria. Picking one to focus on is the team's decision, made with the picture in front of them.
@@ -80,7 +82,9 @@ The last one is the hardest to write and the most valuable. A team that walks in
 
 ## Recent competitor changes
 
-Include a change only when this account would plausibly notice or be affected: a price change on the tier they are evaluating, a certification added that their security review asks about, an integration shipped that the buyer named. General competitor news is a briefing, not a prep.
+Include a change only when this account would plausibly notice or be affected: a price change on the tier they are evaluating, a certification their security review asks about, an integration the buyer named. General competitor news is a briefing, not a prep.
+
+Give the date the source states for the change itself. Where the record has only when LMTY first saw it, write "seen on" and do not tell the team it is new: a certification first seen last month was not thereby added last month. A report change's date is when LMTY recorded it, and a `created` change is LMTY's first report, not a move. On a second prep for the same deal, read what LMTY recorded since the last prep, so an event found late is not missed.
 
 ## What travels
 
