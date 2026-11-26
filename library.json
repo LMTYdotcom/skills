@@ -1,0 +1,1138 @@
+{
+  "version": "1.1.0",
+  "server": "https://mcp.lmty.com/mcp",
+  "playbooks": [
+    {
+      "skill": "company-briefing",
+      "family": "company",
+      "title": "Company Briefing",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Leadership"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, before the meeting it is for.",
+      "connect": "public",
+      "summary": "Get a one-page briefing on a company, product, or person before a meeting, with a source and date for every fact.",
+      "delivers": "One page: what it is, the basics, who leads it, what it sells, recent changes, what's coming, and what isn't known. For a person: current roles, connections, and what they've said in public.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "Company, product or person to brief on",
+          "example": "Northwind"
+        },
+        {
+          "name": "PURPOSE",
+          "required": false,
+          "description": "What the briefing is for",
+          "example": "a partnership meeting on Thursday"
+        }
+      ],
+      "examples": [
+        "What does Northwind do? I have a call with them in an hour.",
+        "Give me a one-pager on Globex before the partnership meeting.",
+        "Quick background on Initech's CEO.",
+        "Brief me on Northwind - what do they do, how big are they, who backs them?",
+        "This company came up in the board deck. What should I know about them?",
+        "What's new with Northwind?",
+        "Any recent news on Initech? What changed there lately?"
+      ],
+      "playbook": "Brief me on {COMPANY}. It is for: {PURPOSE}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{COMPANY}\". A company, its product and its people are separate profiles. If several match and I have not said which, ask. If none match, pass on the tool's hint and stop.\n2. Call get_profile for the match. The overview is the default; read `counts` to see which sections hold anything.\n3. Make at most 4 more reads, chosen by the purpose: the `changes` section for what moved, get_connections for founders, leaders, investors and partners, the `statements` section for what its leaders said, get_calendar for what is coming and what happened lately: both sit at the end of its list, so read from an `offset` near `total` when the first call does not return everything. If an answer names `sectionsLeft`, ask for those next. A further page of a section you are already reading is not a new read: read it to its end, or say how many entries you read and how many the record counts.\n4. Write one page:\n   - What it is: 3 or 4 plain sentences, from official and reported statements only\n   - The basics: founded, based, headcount, funding, each with grade, date and source\n   - People: who founded and leads it, and up to 3 quotes from its leaders with venue and date\n   - What it sells: plans and listed prices, how many customers are known by name, and the company's own count if it states one\n   - What moved: 3 to 6 dated items, newest first. A change marked `found` is first seen, not news; use only added, removed and returned. Word a calendar or timeline entry's date by its basis: published is \"reported on\", observed is \"seen on\". An entry saying what a page no longer lists or now lists is not something that happened: one line at most, as \"no longer listed as of\" or \"now lists\"\n   - What is coming, with dates\n   - Not observed: every empty section\n   - Sources: address, publisher, date\n   For a person, People is their current roles, career in order, what they founded or backed, and what they said in public.\n5. If I ask only what is new with {COMPANY}, skip steps 3 and 4. Read get_calendar and the `timeline` section, newest first, back 90 days. Write one screen: \"read N of M entries, back to [date]\"; at most 8 entries dated occurred or published, each with date, grade and source, or \"Nothing dated on LMTY's record for {COMPANY} since [date]\"; apart, as counts and never as news, what LMTY only first saw (observed, and page readings); one line for what was not read.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. No motive, no prediction, and no adjective the sources did not use. If the profile is thin, write a short briefing and a long \"Not observed\" list. Answer from LMTY's record. Anything from outside it (a web search, a page you fetch, the company's site read directly) goes only in a last section headed \"From the assistant's own web search\", with its link and the date read: never in the page above it, and never in place of a figure on the record. Search only for what my purpose needs and the record lacks, and say what you searched for."
+    },
+    {
+      "skill": "company-claim-check",
+      "family": "company",
+      "title": "Claim Check",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Anyone"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, once per claim.",
+      "connect": "public",
+      "summary": "Check a claim about a company: who's making it, since when, and whether the evidence holds up.",
+      "delivers": "The claim restated so it can be tested, one of eight fixed verdicts (such as Supported, Unverified, or Out of date), who says so, the gap between claim and evidence, and what would settle it.",
+      "inputs": [
+        {
+          "name": "CLAIM",
+          "required": true,
+          "description": "The exact wording of the claim",
+          "example": "Northwind has 10,000 customers"
+        },
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "Who the claim is about",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "Northwind's deck says they have 10,000 customers. Is that true?",
+        "Northwind says it's trusted by half of the largest banks. Is that real?",
+        "Did Initech really raise a $50M Series B?",
+        "Is Northwind actually SOC 2 certified?",
+        "A rep told the buyer Globex uses Northwind. Do they?",
+        "The assistant said Northwind has 800 employees. Where does that come from?",
+        "Someone posted that Acme's Pro plan is $50 a seat. That's wrong. Can you correct it?"
+      ],
+      "playbook": "Check this claim about {COMPANY}: \"{CLAIM}\".\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Restate the claim so it can be tested: who, what, how much, as of when. Split a compound claim into its parts. Keep the original words beside your restatement, and say what you assumed.\n2. Call search_profiles for \"{COMPANY}\" and for any second party the claim names, such as a customer, a partner or an investor. The second party's side is often the better evidence.\n3. Read where this kind of claim lives: get_profile for the overview, the `facts` section narrowed with factKinds, the `customers` or `pricing` section, or get_connections. Collect every statement that bears on the claim, not only the one that matches it.\n4. For each statement note its grade, LMTY's confidence, and each source's publisher, tier and dates. A get_connections edge carries a source count, not its sources: do not say where a set of ties comes from, or that none has a source of a given kind, unless you read get_profile with sections [\"connections\"] for them. Then ask: is the only voice the subject itself?\n5. Give exactly one of these eight verdicts, worded as here, and one sentence of reasons naming sources and dates:\n   Supported | The subject's own claim | Reported, not confirmed by the subject | Unverified | Disputed | Out of date | Not observed | Untestable\n   Supported needs a source in a position to know (a register, a filing, the other party's own statement) or the subject plus an independent source; press alone is Reported. For a claim that one company uses another's product, the interested party is the vendor: write \"The subject's own claim\" as \"The vendor's own claim\". It is the same verdict, not a ninth.\n6. State the gap: the unit (\"customers\" where the page says \"users\"), the scope, the tense, a rounder number. Two figures that count different things do not conflict; say what each counts.\n7. Name the one or two things that would settle it: a filing, a register, the customer's own statement.\n8. End with \"Before repeating it\": the form of the claim the evidence supports, attributed and dated.\n9. If I ask you to correct the claim, draft 1 to 3 sentences only when the record holds an official, dated source on the same claim, plan and scope that says otherwise: quote it with its source and date, as a draft for a person to review. If not, write \"No correction drafted\" and which part failed, with no suggested response.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. Never write \"true\" or \"false\"; the verdict describes the evidence. No word about anyone's motive: no \"misleading\", no \"inflated\". Nothing found is \"Not observed\", which is not evidence against the claim. Check the claim that was made, not a nearby one that is easier. The verdict comes from LMTY's record. Anything from outside it (a web search, a page you fetch, the company's site read directly) goes only in a last section headed \"From the assistant's own web search\", with its link and the date read: it never changes the verdict, and a claim the record does not hold stays \"Not observed\"."
+    },
+    {
+      "skill": "company-customer-map",
+      "family": "company",
+      "title": "Customer Map",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Product"
+      ],
+      "cadence": "On demand",
+      "when": "On demand. Monthly for a product being watched. A repeat run should lead with customer names added, removed, or listed again.",
+      "connect": "public",
+      "summary": "Find a product's publicly named customers by industry, company size, and country, and where each name comes from.",
+      "delivers": "The best-evidenced customers, how each is known, counts by segment, which customer names were added to or dropped from public lists, and what else they use.",
+      "inputs": [
+        {
+          "name": "PRODUCT",
+          "required": true,
+          "description": "The product you want to see customers for",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "Who uses Northwind?",
+        "Which industries does Northwind sell into?",
+        "Is Globex a Northwind customer?",
+        "Which logos has Initech lost this year?",
+        "How many customers do Northwind and Initech have in common?"
+      ],
+      "playbook": "Map the publicly named customers of {PRODUCT}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{PRODUCT}\". Customers are recorded on the product's profile. If the company's profile shows none, read the product's before saying none are known.\n2. Call get_profile for the overview. `counts.customers` is how many are publicly named. A count the company claims for itself is a fact of kind proof_point or financial: look in both before saying there is none. Report both numbers; neither corrects the other. A claimed figure stored as a bare value and label with no sentence is reported as stored, both in quotation marks, with its source and date: say the record does not hold its sentence, and do not complete it.\n3. Call get_profile with sections [\"customers\"] and page with offset until `more` is empty or you have read 100. Say how many you read out of how many. If the count is 0 or there is no product profile, call get_connections with focusType and focusId of the product or company and kinds [\"customer_of\", \"uses\"], and report the ties that point at it as publicly named customers. Say they came from ties and carry no evidence kind, sector or size, and write \"who makes the claim: not read\".\n4. For each customer you name, say who makes the claim and how it is known (`evidence`): the vendor (\"Northwind names Globex as a customer on its customers page\"), the customer itself (its own job ad or site), or a third party. A customer list is the vendor's own claim unless the customer or an independent source says so. Write \"publicly named customers\", never \"its customers\", \"customers include\" or \"uses\". `since` is a real start only when `sinceStated` is true; otherwise write \"seen since\".\n5. Count the ones you read by sector, by size band and by country, with a row for \"not given\". Write \"of the N read\", never a share of all customers.\n6. Report movement only where a source shows it: entries marked `ended`, and `alsoUses` entries with `moved` set. Two products for one customer is \"recorded with both\" unless the order of events is known. Give no reason for a removal unless a source states one.\n7. Count which other products the same customers are recorded with (`alsoUses`). That entry does not say who makes the claim.\n\nWrite: The three numbers (claimed, publicly named, read) | Publicly named customers, best evidenced first (table, with who makes each claim) | How the claims are known | By sector, size, country | Movement | Other products the same customers are recorded with | What the publicly named set leaves out.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. Known is a floor, not a total. A logo proves the vendor claims the customer, not that they still use it. A company missing from the list is \"not observed as a customer\", never \"not a customer\". Answer from LMTY's record. Anything from outside it (a web search, a fetched page) goes only in a last section, \"From the assistant's own web search\", with link and date read: never in the three numbers, the table or a count."
+    },
+    {
+      "skill": "company-event-prep",
+      "family": "company",
+      "title": "Event Prep",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Product",
+        "Leadership"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly for a company being watched; on demand before a known date. A repeat run should lead with dates added, moved or passed.",
+      "connect": "public",
+      "summary": "Get ready for a company's upcoming launches, earnings calls, and events, based on what came up last time.",
+      "delivers": "A dated list of upcoming events. For each one: what's been announced, what came up the last few times, what to have ready, and two or three announcements to watch for.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "The company with the upcoming event",
+          "example": "Northwind"
+        },
+        {
+          "name": "ROLE",
+          "required": false,
+          "description": "Who is preparing, such as sales, product, marketing, or leadership",
+          "example": "sales"
+        }
+      ],
+      "examples": [
+        "What does Northwind have coming up?",
+        "When is Northwind's next earnings call, and what did they say on the last one?",
+        "Northwind's conference is next month. What should we have ready?",
+        "Their new pricing takes effect on the 1st. Prep me.",
+        "Give me a watch list of Initech's dates for the quarter."
+      ],
+      "playbook": "Prepare me for what {COMPANY} has coming up. I am preparing as: {ROLE}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{COMPANY}\". A product's dates may sit with its maker, and a subsidiary's earnings with its listed parent; say whose calendar each date came from. Before saying whether there is a listed parent, read the ownership ties: get_connections with kinds [\"subsidiary_of\", \"acquired\"]. Otherwise write \"parent not checked\", never \"no listed parent\".\n2. Call get_calendar with profileType, profileId and upcomingOnly true for what is coming, which sits at the end of the list. For the last 90 days, call it without upcomingOnly and read from an `offset` near `total`. A past entry's `startsAtBasis` says how its date is known: published is \"reported on\", observed is \"seen on\". An entry saying what a page no longer lists or now lists is not something that happened: give those in one line, as \"no longer listed as of\" or \"now lists\".\n3. Call get_profile with sections [\"occasions\"] for its earnings calls and keynotes as read: tone, themes, and sentences of direction with quotes.\n4. Something announced as coming with no date (\"coming soon\") gets no block: list it under \"Announced without a date\", with who said it and when. For each coming date write:\n   - Stated: what a source says will happen, each line with its source\n   - Expected: only a count of what past occasions of this kind carried, dated (\"on 3 of the last 4 calls, pricing was discussed\"), never what will be said. With fewer than 3 distinct occasions, say there are too few and quote what was said as precedent\n   - Last time: the last 2 or 3 occasions of the same kind, with date, tone, themes and what was announced. How one landed: only from posts in get_profile sections [\"chatter\"] dated after it that name it, quoted and unverified. With none, write \"no public reaction recorded\"; never from memory or from the announcement itself\n   - Prep: what to have current before, who watches on the day, what to check within a day after\n   - Tripwires: 2 or 3 specific statements that could trigger work, such as \"a list price for the new tier\"\n   Write every prep and tripwire line as an option or a check I may choose (\"Option: ...\", \"Worth checking: ...\"), never as an instruction.\n5. Note a rhythm only with 3 or more past occasions, as a count with dates. Several recordings of one call are one occasion: count occasions, not entries. A release note or changelog entry is not an occasion.\n\nWith no announced date, or no profile, leave the per-date blocks out and print no empty table. Do not open with \"nothing\": say no date is announced in LMTY's sources as of the read date, written out, which is not nothing planned.\n\nIf you have run this before for {COMPANY}, lead with dates that were added, moved or passed since then. An earlier run is one in this conversation or in memory your client provides, never one you search files for. With none, say this run is the baseline.\n\nRules: Keep every statement's grade; chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". An announced date is a fact; what will be said on it is not: write \"the last three did\", never \"so they will\". A date that passed with nothing recorded is \"outcome not observed\". Web finds go only in a last section, \"From the assistant's own web search\", with link and date."
+    },
+    {
+      "skill": "company-hiring-signals",
+      "family": "company",
+      "title": "Hiring Signals",
+      "audience": [
+        "Marketing",
+        "Sales",
+        "Leadership"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly for a company being watched; on demand otherwise. A repeat run should lead with the change in open roles and any leadership move.",
+      "connect": "public",
+      "summary": "Read a company's open roles and leadership changes, and what to check next.",
+      "delivers": "Open roles now and, where available, 30 and 90 days ago, the mix by function and country, key role titles, leadership changes, and up to three readings, each with what was seen and what to check next.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "The company to research",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "What is Northwind hiring for right now?",
+        "Is Initech growing or cutting?",
+        "Who has joined Northwind's leadership team this year?",
+        "Northwind just posted a bunch of sales roles in Germany. What does that tell us?",
+        "Where does Northwind hire its engineers from?"
+      ],
+      "playbook": "Tell me what {COMPANY}'s open roles and leadership changes show.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{COMPANY}\" and take the company's profile. Open roles are recorded on the company, not its products.\n2. Call get_profile with sections [\"overview\", \"hiring\", \"trends\", \"people\"]. If the answer names `sectionsLeft`, ask for those next.\n3. Before any number, say what was read and when: `hiring.source.kind` is `board` (the whole list), `careers_page` (what one page showed) or `linkedin` (a sample, with the real `total` beside it), and `readAt` is the date.\n4. Give open roles now, 30 days ago and 90 days ago, and how many are new in the last 30 days. A null earlier count means the record does not reach back: write \"no earlier count\", never \"unchanged\". Then the counts by function and by country.\n5. Quote 5 or 6 role titles exactly, the ones that name a product, a market, a language or a first hire in a function. Give a posted date only when the record has one; otherwise write \"not given\" and call no role \"newest\". Where no role has a posted date, write \"roles observed as of\" the read date.\n6. Call get_connections with kinds [\"founded\", \"leads\", \"board_member\", \"works_at\"] and includeEnded true. List who leads it, and who joined or left with the date and how it is known. An edge's `since` may be when LMTY first saw the role: write \"as of\", not \"joined\" or \"became\", unless a stated start was read. The stated start and ended roles are on the works_at ties and in get_profile with sections [\"connections\"]. With no dated arrival or departure on record, write \"no arrivals or departures on record since\" the date the leadership entries were first seen, never \"stable\", \"unchanged\" or a span of years.\n7. For up to 3 things you noticed, write: Seen (the count, the titles, the dates) | Consistent with (one reading, named as a reading) | Would confirm (what to check next).\n\nIf you have run this before for {COMPANY}, lead with what changed since then, and say \"nothing new\" in one line when nothing did. An earlier run is one you can see in this conversation or in memory your client provides: do not search files or folders for one. With none, say there is no earlier run, so this one is the baseline, and go on.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. An open role is an intent to hire on a date, not a hire. Fewer open roles is not layoffs. Never give a reason for a departure unless it was stated. Roles, employers, dates and public statements only: nothing about anyone's private life. Answer from LMTY's record. Anything from outside it (a web search, a careers page you read yourself) goes only in a last section headed \"From the assistant's own web search\", with its link and the date read: never in a count, the mix or a signal."
+    },
+    {
+      "skill": "company-in-their-own-words",
+      "family": "company",
+      "title": "In Their Own Words",
+      "audience": [
+        "Marketing",
+        "Product"
+      ],
+      "cadence": "On demand",
+      "when": "On demand. Monthly if you're watching a company's messaging. A repeat run should lead with wording that changed.",
+      "connect": "public",
+      "summary": "Collect how a company describes itself, word for word: its headlines, category, proof points, and what its leaders say.",
+      "delivers": "Its wording by page, the category it claims, the evidence and figures it cites, how its wording has changed, and up to 10 dated quotes from its leaders. For a person: what they've said in public.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "Company, product or person you want to quote",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "How does Northwind describe itself?",
+        "What category does Initech say it's in now?",
+        "What was Northwind's homepage headline before the relaunch?",
+        "What proof points does Northwind use?",
+        "What has Northwind's CEO been saying lately?",
+        "What has Initech's founder said in public this year?"
+      ],
+      "playbook": "Show me how {COMPANY} describes itself, in its own words, and how that has changed.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{COMPANY}\". Read the company's profile and, when it has a main product, the product's. Say which words came from which.\n2. Call get_profile with sections [\"facts\"] and factKinds [\"tagline\", \"category_claim\", \"proof_point\", \"boilerplate\", \"page_meta\", \"milestone\"]. Copy each wording exactly, with its page and the date last seen. Leave out button labels: stored as taglines, they are not messaging. A count of customers or users it claims can also sit under kind financial: look there before saying it cites none. The overview's `about` text is LMTY's writing: never quote it as the company's words. With no heading, tagline or category term on record, write \"not observed in LMTY's sources\" and move nothing else into that slot: wording read on the site or by search goes only in a last section, \"From the assistant's own web search\", with link and date.\n3. Call get_profile with sections [\"terms\"] for the category terms its pages use and the earliest use known of each.\n4. Call get_profile with sections [\"statements\"] for what its founders and executives said in public. Keep the speaker, the venue and the date. A statement graded official can be another company's leader speaking: check the speaker's employer. A statement by another company's leader about {COMPANY} is not its own words: leave it out and say in one line how many there are. A leader's remark that names no company (on the market, hiring, technology) is that person's: quote it under their name and role, and call it the company's position only if it is about the company's own product, customers or plans, or they say they speak for it.\n5. A wording with an end date was replaced. Pair old and new only where they held the same page and heading, and give both dates. Wording first seen when the page was first read is not new wording. Give no reason for a change unless a source states one: write \"no source states why\".\n\nIf {COMPANY} is a person (search_profiles gives type person): do only step 4, on that person's profile, and write only their statements, newest first, and what the words do not show. Say which company they speak for, from their current roles, and that the company's own wording is a separate read. What others said about them is not their words: leave it out and count it. A person has no headline, tagline, category or boilerplate: leave those parts out, not empty.\n\nWrite: What it says it is (page, heading, line beneath, last seen) | The category it claims | The proof it cites | How the wording has moved | What its leaders say (up to 10 quotes, newest first) | Do the voices agree (its pages against its leaders) | What the words do not show.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. Quote, never paraphrase; mark any summary as yours. A company's statement proves only that it said so. Describe a change in words (\"'for small teams' no longer appears in the heading\"), never as intent (\"moving upmarket\"). Do not tidy a spoken quote."
+    },
+    {
+      "skill": "company-portfolio-brief",
+      "family": "company",
+      "title": "Portfolio Brief",
+      "audience": [
+        "Leadership",
+        "Customer success",
+        "Anyone"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly or monthly for a list you're watching. A repeat run should start with developments dated since the last run, and say so when there's no earlier run to compare with.",
+      "connect": "public",
+      "summary": "Scan your list of companies for recent developments worth a look, with the evidence, dates, and one follow-up question for each.",
+      "delivers": "A line saying how much of your list it read. Then up to 8 companies with something worth following up on, each with the evidence, its date, and one question to ask. Every other company is listed with why it wasn't flagged: nothing dated, nothing that met what you asked, not read, or not identified.",
+      "inputs": [
+        {
+          "name": "COMPANIES",
+          "required": true,
+          "description": "The list of companies to scan",
+          "example": "Northwind, Initech, Globex"
+        },
+        {
+          "name": "CRITERION",
+          "required": false,
+          "description": "What to look for",
+          "example": "leadership changes and funding"
+        }
+      ],
+      "examples": [
+        "Which of my portfolio companies need my attention this week? Northwind, Initech, and Globex.",
+        "Here are our 15 holdings. What should I follow up on this month?",
+        "Run the monthly watchlist brief on these 25 companies.",
+        "Which of these is in trouble: Northwind, Initech or Globex?",
+        "Anything new on my key accounts since last week's brief?",
+        "Give me follow-up questions for the board on each company in this list.",
+        "What are Initech Ventures' holdings, and which need attention?"
+      ],
+      "playbook": "Which of these companies merit my attention, and what should I follow up on? {COMPANIES}\n\nWhat counts as needing attention: {CRITERION}. If I gave none, use this default and say so: funding, an acquisition or a sale, a leadership arrival, a price or plan change, a product launch or an end of life, a legal action, or a security incident, dated, in the last 90 days. Go by what an entry says, not its kind: an outage or a routine version release alone does not count; give releases as a count.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\nWork only from my list. Never look up a fund's holdings: ask for the list.\n\n1. Call search_profiles for each of the first 30 names; name any beyond as not read. A name several profiles match: do not pick, put it under \"Could not confirm\". No match: search once more under the other obvious name, and show a profile found that way under both names.\n2. For every company found, call get_calendar with profileType, profileId and a small limit: it gives `total`. The list runs earliest first: if there is more, read the 30 entries before `total` (read on if `more` > 0), and say \"the newest N of M entries, back to [date]\". If the search also returned a product under the same name, or one differing only by a suffix such as \".ai\", read its calendar too and name both.\n3. Group each entry by `startsAtBasis`: occurred is \"on [date]\", published is \"reported on [date]\", observed is first seen. A page reading (what a page no longer lists or now lists) is \"no longer listed as of [date]\", naming whose page, or \"now lists\", whatever its basis. Only occurred and published entries are developments. Several entries about one event are one, with the strongest basis and its earliest date.\n4. For each company to be shown, take the entry's grade and sources from get_profile with sections [\"timeline\"] and limit 50 for the profile its `companies` names (search_profiles for that name if needed). If it is not on that page, write \"grade not read\".\n5. Write:\n   - Coverage, first: of how many given, how many were read in full, read in part, not read, and not found. Then the criterion and whose it is\n   - Merits attention (at most 8 companies, by date, and say so): the development and who states it; its grade and date; the entry and criterion it met, nothing else; one follow-up question on what it leaves unstated. Say once that a report's date is not the event's\n   - Dated entries, none met the criterion; Nothing dated on record: names, one line each\n   - No longer listed: one line; one page's names at once are one item with a count. Never a loss\n   - Not read; Could not confirm, with the question that settles each\n   Every name appears in exactly one place.\n\nIf none meets the criterion, write the coverage and criterion lines, one sentence saying so, and the one-line sections.\n\nIf you ran this before for this list (in this conversation or your client's memory, not a file search), lead with entries dated after that run; if not, say there is no earlier run to compare with.\n\nRules: Keep every statement's grade; chatter means one unverified source, is never stated as fact and never alone flags a company. No ranking, score, verdict or advice on a holding. If I ask which is in trouble, say the record cannot say. No motive, no forecast, nothing from memory. An absence is \"nothing dated on LMTY's record\", never \"nothing happened\". Anything from outside LMTY goes only in a last section, \"From the assistant's own web search\", with link and date."
+    },
+    {
+      "skill": "company-post-drafts",
+      "family": "company",
+      "title": "Company Post Drafts",
+      "audience": [
+        "Marketing",
+        "Sales",
+        "Leadership"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly for a company you post about, otherwise on demand. A repeat run should draft only from developments dated since the last run.",
+      "connect": "public",
+      "summary": "Draft a short post about one company's recent developments, with two or three angles and a source on every claim.",
+      "delivers": "Two or three angles, each with the developments behind it, and one draft for you to review, with a source after every claim. It also says how much it read, what it left out, and why.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "The company to write about",
+          "example": "Northwind"
+        },
+        {
+          "name": "DESTINATION",
+          "required": false,
+          "description": "Where the post is going",
+          "example": "a newsletter"
+        },
+        {
+          "name": "AUDIENCE",
+          "required": false,
+          "description": "Who the post is for",
+          "example": "operations leaders"
+        }
+      ],
+      "examples": [
+        "What could we post about Northwind's recent developments?",
+        "Draft a LinkedIn post about Northwind's launch last week.",
+        "Give me two or three angles for a newsletter item on Initech's funding news.",
+        "Write a hot take on what Northwind just announced.",
+        "Anything worth posting about Globex this week?",
+        "Draft something short for X about Initech's price change."
+      ],
+      "playbook": "What could I post about {COMPANY}'s recent developments? It is going to: {DESTINATION}. It is for: {AUDIENCE}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\nAt most 8 tool calls. One company at a time: if I named a market or several, ask which one.\n\n1. Call search_profiles for \"{COMPANY}\". If several match, ask which.\n2. Call get_calendar with profileType, profileId and a small limit: it gives `total`. The list runs earliest first: if there is more, read the 30 entries before `total` (read on if `more` > 0), and report \"the newest N of M entries, back to [date]\".\n3. For grades and sources, call get_profile with sections [\"timeline\"] and limit 50 for the profile the entries' `companies` names, often the product (search_profiles for that name if needed). An entry not on that page is \"grade not read\".\n4. Put every entry in one group, by its `startsAtBasis` or `atBasis`:\n   - dated by when it happened (occurred)\n   - dated by a report (published): write \"reported on [date] by [source]\"\n   - first seen (observed), and any page reading (what a page now lists, now says or no longer lists): write \"now lists\" or \"no longer listed as of [date]\", never \"new\", a departure or a loss. Left out and counted\n5. Merge reports of one story: it takes the strongest basis among its entries (occurred, then published, then observed) and the earliest date of that basis, never a source's date. Then set aside any story first dated before the last 90 days.\n6. Keep what the company said apart from what others said: \"{COMPANY} says\" or \"announced on [date]\" for its own source, \"reported on [date] by\" for press.\n7. Write:\n   - Coverage: entries read of how many, and how many are in each group\n   - Angles: 2 or 3, or 1 when the record supports 1. Each is one sentence with the entries behind it, leading with a story dated by when it happened or by a report: choose by what the story is and how well it is supported, then newest first, and say how you chose. If its grade was not read, say \"grade not read\" and write no draft from it unless I ask\n   - Draft, for the first angle only: at most 120 words for a social post, 250 for a newsletter item, every claim followed by its source in brackets with the source's own date, or \"date not given\". First line: \"Draft, for a person to review before it is posted. Nothing has been posted or sent.\" Where it needs my view, leave \"[YOUR VIEW: ...]\": never write my company in as fact. For a hot take, write the same draft and say the opinion is mine to add\n   - Left out and why (with counts): first-seen entries, page readings, merged reports, entries graded chatter, entries announced as coming, older stories\n\nIf no story is dated by when it happened or by a report, write \"Nothing on record carries a date of its own\", list the first-seen entries as \"now lists\", count the page changes, and write no angles and no draft.\n\nIf you ran this before for {COMPANY} (in this conversation or your client's memory, never a file search), use only entries dated after that run, or say \"nothing new\". With none, say this run is the baseline.\n\nRules: Keep every statement's grade; chatter means one unverified source, is never stated as fact and is in no angle. No motive, forecast or superlative of your own, and no claim the sources do not make. Nothing from memory. Post or send nothing. Anything from outside LMTY goes only in a last section, \"From the assistant's own web search\", with its link and the date read."
+    },
+    {
+      "skill": "company-pricing-history",
+      "family": "company",
+      "title": "Pricing History",
+      "audience": [
+        "Marketing",
+        "Product",
+        "Sales"
+      ],
+      "cadence": "On demand",
+      "when": "On demand. Monthly if a product's pricing matters to you. A repeat run should lead with moves since the last run.",
+      "connect": "public",
+      "summary": "See how a product's prices and plans have changed over time, with dates and the overall pattern.",
+      "delivers": "The current price list, a dated timeline of moves, plans no longer listed, what people report paying, and the pattern in plain numbers.",
+      "inputs": [
+        {
+          "name": "PRODUCT",
+          "required": true,
+          "description": "The product you want the pricing history for",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "How has Northwind's pricing changed over the last year?",
+        "What did Northwind's Pro plan used to cost?",
+        "When did Initech drop its free tier?",
+        "Give me a timeline of every price change Northwind has made.",
+        "How often does this vendor raise prices?"
+      ],
+      "playbook": "Show me how {PRODUCT}'s prices and plans have changed.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{PRODUCT}\". Prices sit on the product's profile, not its maker's. When a company and a product share a name, read the product.\n2. Call get_profile with sections [\"overview\", \"pricing\"]. The plans on sale now are the overview facts of kind pricing_plan. In `pricingHistory`, `changes` are dated moves with before and after values, and `ended` are plans no longer listed. Page with offset until `more` is empty.\n3. Build a timeline, oldest first: the date, the move (new plan, price up, price down, plan retired, closed to new buyers, allowance changed, model changed), from what, to what, and the grade and source where the record gives them. A move with no source of its own is marked \"from LMTY's price record\" and takes the date it was observed. A move the record words as reported keeps \"reportedly\" in the move itself.\n4. Say when the record begins, as two dates when they differ: the earliest dated entry, and the date the current plans were first read. Nothing before the earlier is known, and a plan first seen on the later was not introduced on it.\n5. Facts of kind reported_price are what people say they pay. List them apart, with who said it and when. Never use one to correct a listed price. Posts in get_profile sections [\"chatter\"] are a second place a price may be mentioned, unverified: read them only when there are no reported_price facts or I ask. Before writing that the profile has no reported prices, say which of the two you read, with counts.\n6. Describe the pattern in 2 to 4 sentences, each with a count and dates: how many moves in what period, which way the entry price and the top price went, and whether prices or allowances moved.\n\nWrite: On sale now (table) | Timeline (table) | No longer listed | What people report paying | The pattern | What the record does not show.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. A listed price is what the page said on a date, not what anyone paid. Write \"no longer listed as of\", not \"discontinued\". Never say why a price changed unless the company said why. With no history on record, give the current list and say the record starts now. The price list and the timeline hold only what LMTY's record holds. A price or a move from outside it (a web search, a page you fetch) goes only in a last section headed \"From the assistant's own web search\", with its link and the date read: never a row in either, and never in place of a price on the record. Do not reconstruct past prices from memory or undated pages."
+    },
+    {
+      "skill": "company-profile-check",
+      "family": "company",
+      "title": "Profile Check",
+      "audience": [
+        "Marketing",
+        "Leadership"
+      ],
+      "cadence": "Monthly",
+      "when": "Monthly, and after any launch, rename or funding round. A repeat run should lead with findings fixed, findings still open and findings that are new.",
+      "connect": "public",
+      "summary": "Compare what an AI assistant says about your company with the public record, and see what to fix first.",
+      "delivers": "The assistant's unaided answer beside the record; facts for you to confirm; possible gaps, outdated facts, and conflicting claims; and a ranked list of suggested fixes with the page each belongs on.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "Company, product or person (your own)",
+          "example": "Acme"
+        }
+      ],
+      "examples": [
+        "What does AI say about Acme?",
+        "Audit our public profile. What's wrong or missing?",
+        "How does Acme look to a buyer who asks their assistant about us?",
+        "We changed our name in March. Has the public record caught up?",
+        "Check what's out there about me as a founder."
+      ],
+      "playbook": "Check what is said about {COMPANY}, which is my own company.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so first, give the unaided answer from step 1 below that, and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Before calling any tool, write 3 to 6 sentences answering \"what is {COMPANY}?\" from what you already know, with the facts you would state: what it does, where it is based, how big it is, who leads it, what it costs. If you know nothing, say exactly that. Keep this text unchanged, and label it as one assistant's answer on the date, written out, naming the assistant and model, not what \"AI\" says.\n2. Call search_profiles for \"{COMPANY}\" and get_profile for the overview. No profile at all is the first finding: pass on the tool's hint and continue from web search, marked as your own research.\n3. Set your unaided answer beside the record, statement by statement: where they agree, where they differ, and what you stated that the record does not hold. Say \"the record does not hold it\" only if you read every section with a count above 0; otherwise say \"not in the sections read\" and name them. Neither side is the truth; each difference is a question for me. A price or figure you remembered is your memory, not an old price on record.\n4. Lay out every headline fact for me to confirm, with what the record says, its grade and \"still true?\". Mark the rows worth a second look: an old date, two values, a source that is not us.\n5. Names and channels: the `name`, former_name facts, `website` and the overview's `channels` with each `role`, for the company and its main product. Keep apart \"missing from LMTY's record\" (not held, may exist; it keeps no alias list) and \"missing from our own site\" (only `endedBy` gone or a `removed` change). Ask me which other search matches and channels are ours.\n6. Missing: for each section whose count is 0, say what a reader would expect there and both possible reasons, without choosing: LMTY has not read it, or our pages do not show it. Offer a check as a question (\"does your site have a customers page?\"); never say a page is missing. Customers sit on the product's profile: a company's count of 0 is not a gap until the product's was read.\n7. List facts that may be out of date, and facts the record gives two values for. Put each conflict to me as a question; do not say which value is right.\n8. List statements that rest on one unverified source, quoted with who and when, for me, not you, to sort into three bins: untrue and worth answering, true and uncomfortable, or harmless.\n9. Fix first: up to 10 rows, ranked by how many readers each reaches and how wrong it leaves them: the change, where it belongs, who is misled, the effort.\n\nIf you have run this before for {COMPANY}, lead with findings fixed, still open and new. An earlier run is one you can see in this conversation or in memory your client provides: do not search files or folders for one. With none, say this run is the baseline and go on.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. Never tell me a fact is wrong: tell me what the record says and where it came from. No score for the whole profile."
+    },
+    {
+      "skill": "company-prospect-stack",
+      "family": "company",
+      "title": "Prospect Stack",
+      "audience": [
+        "Sales"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, before the call it is for.",
+      "connect": "public",
+      "summary": "Find out which tools a prospect is publicly known to use, split into what to mention and what to ask on the call.",
+      "delivers": "A table of known tools with who says so and since when, each labeled Mention or Ask, and 3 to 5 questions for the call.",
+      "inputs": [
+        {
+          "name": "ACCOUNT",
+          "required": true,
+          "description": "The company you are about to speak to",
+          "example": "Globex"
+        },
+        {
+          "name": "WE_SELL",
+          "required": false,
+          "description": "Your product or category, so the relevant tools come first",
+          "example": "project tracking software"
+        }
+      ],
+      "examples": [
+        "What tools does Globex use?",
+        "Is Globex already using Northwind?",
+        "I have a discovery call with Globex tomorrow. What's in their stack?",
+        "Which of our integration partners does Globex use?",
+        "Who's the incumbent at Globex for project tracking?"
+      ],
+      "playbook": "List the publicly evidenced tools for {ACCOUNT}. I sell: {WE_SELL}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{ACCOUNT}\" and settle the company by its website. If two companies could be the one meant, ask which and wait: a stack for the wrong company is worse than none. If one matches and its profile has no website, do not guess one: give the stack for that match, say which profile you used and ask me to confirm it.\n2. Call get_connections with focusType \"company\", the focusId, kinds [\"customer_of\", \"uses\"] and includeEnded true. Add the number of edges returned to offset and call again until `more` is 0.\n3. An edge does not say how the use is known. For a product whose use matters to the call, read the evidence where it exists: get_profile on {ACCOUNT} with sections [\"connections\"], or on that product with sections [\"customers\"] for the entry about {ACCOUNT}. For the others write \"how it is known: not read\". Then say who makes the claim:\n   - Shown by the account: found on its own site or code, or named in its own job ad\n   - Said by both: only when the account itself says it uses the tool (its own page or code, or a quote from a named person there). A case study only the vendor published is the vendor's claim\n   - Claimed by the vendor: a logo or a name on the vendor's page. An official grade here means the vendor said so, not that the account confirmed it\n   - Reported: an article says so\n4. Date each one: \"since\" only for a start a source states, otherwise \"seen since\", and always the date last seen.\n5. Bin each: Mention (the account's own side shows it, seen in the last few months), Ask (vendor-claimed, reported, or not seen lately), or leave out (ended long ago). An item graded chatter, or marked \"how it is known: not read\", is an Ask: raise it as a question, and never write it as \"also uses\" or \"is known to use\".\n6. Write 3 to 5 questions for the call, each tied to one item: confirm an \"ask\" item, find who owns a tool, learn when it renews, probe a category where nothing is observed.\n7. If what I sell is a category and names no product, list no likely incumbents from integrates_with ties: an integration says two products connect, not that {ACCOUNT} uses either. Say so, give any such tie in one line as \"connects with, use not evidenced\", and make it a question.\n\nWrite the questions first, then the table, headed \"Publicly evidenced tools\" and never \"its stack\" or \"the tools it uses\" (product, maker, who makes the claim, evidence, since, last seen, bin), then what the list leaves out.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. \"Known to use\" is the strongest phrase for one item, and only with who makes the claim beside it. Not listed is not \"does not use\": most tools leave no public trace. Do not decide from memory who competes with whom. Do not look up any individual at the account. Anything from outside LMTY (a web search, a fetched page or job ad) goes only in a last section, \"From the assistant's own web search\", with link and date read: never in the questions, the table or a bin."
+    },
+    {
+      "skill": "company-relationship-map",
+      "family": "company",
+      "title": "Relationship Map",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Leadership"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, before a partnership, investment, or acquisition conversation.",
+      "connect": "public",
+      "summary": "Map who leads, funds, and partners with a company, who it competes with, and who says so.",
+      "delivers": "A company's leaders, investors and owners, partners, and competitors, each with who states it, since when, and whether it has ended.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "Company, product or person at the center",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "Who backs Northwind?",
+        "Who does Northwind partner and integrate with?",
+        "What has Initech acquired?",
+        "How are Northwind and Initech connected?",
+        "Who does Northwind say its competitors are?"
+      ],
+      "playbook": "Map who {COMPANY} is tied to and how.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\n1. Call search_profiles for \"{COMPANY}\". Investors and owners attach to the company, integrations usually to its product; read both when I ask about both.\n2. Call get_connections with focusType and focusId, includeEnded true, and `kinds` narrowed to one group at a time:\n   - People: founded, leads, board_member, advises\n   - Money and ownership: invested_in, acquired, subsidiary_of\n   - Working ties: partners_with, integrates_with\n   - Rivals: competes_with\n   Add the number of edges returned to offset and call again until `more` is 0. Say how many of each of these kinds exist and how many you read. Give no count for a kind you did not ask for, such as customers or employment.\n3. Call get_profile with sections [\"facts\"] and factKinds [\"funding_round\", \"valuation\", \"funding_total\"]. Pair an investor with a round only where a source names that investor in that round; otherwise list investors and rounds separately, never paired by nearest date.\n4. For every tie you show, say who states it. A get_connections edge carries a grade and a source count, not its sources or whether its `since` is a stated start: for those, call get_profile with sections [\"connections\"], which carries both. A partnership listed by one side only is that side's claim. An integration in a directory shows a connector exists. A competitor on a comparison page is who that company chose to be compared with. Edges of kind competes_with, integrates_with and partners_with are stored in an arbitrary order: their direction does not show who named the rival, listed the integration or announced the partnership. Compare each source's site with each party's. With no source read, write the tie as existing between the two, \"stated by: not read\".\n5. Date each tie: \"since\" only for a start a source states, otherwise \"seen since\". Mark ended ties and how the end is known.\n\nWrite: In short (3 or 4 sentences) | People | Money and ownership | Working ties | Rivals | Ended ties | Not on the map (stakes, terms) | From the assistant's own web search (anything from outside LMTY, only here, with link and date). Show every tie that bears on the question with its grade: an unverified tie is shown, labeled unverified. For a kind with more than 10 ties, give the count for each grade, name a grade group of 3 or fewer in full, show a larger group's best-sourced few, and give the rest as a number, never as names; count ended ties separately. Leave out a section with nothing in it. The \"Not on the map\" line names each of the 4 groups with no tie: \"not observed in LMTY's sources\" if the kind was read and empty, \"not read\" if it was not asked for; never \"not assessed\", \"none\" or \"has no\". A profile with 3 ties or fewer gets its freshness line, those ties (both parties named, with grades) and that line, in about 150 words, and nothing else.\n\nRules: Keep every statement's grade: official means someone who speaks for one of the parties said it (check which party), reported means press or two independent sources, chatter means one unverified source and is never stated as fact. Give each fact the date it was last seen and its source address. An empty section is \"not observed\", never \"none\". A page can hold fewer entries than the limit asked for: read until `more` is empty. A tie is as strong as its weaker end. A shared investor or board member is a path, not an alliance. No motive for a deal unless a party stated one."
+    },
+    {
+      "skill": "company-security-claims",
+      "family": "company",
+      "title": "Security Claims",
+      "audience": [
+        "Sales",
+        "Leadership",
+        "Anyone"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, or quarterly for each vendor you review. A repeat run should start with anything LMTY spotted for the first time, or that's no longer listed, since the last run.",
+      "connect": "public",
+      "summary": "Check the public evidence of a vendor's security and compliance: the certifications it claims, reported incidents, and what to ask the vendor for.",
+      "delivers": "The certifications the vendor claims, where each claim comes from, and which details LMTY's sources don't show. Then any reported security incidents, each counted once, what has changed, and up to 6 questions to ask the vendor. It's a checklist of public evidence, not a security approval.",
+      "inputs": [
+        {
+          "name": "COMPANY",
+          "required": true,
+          "description": "The company or product under review",
+          "example": "Northwind"
+        },
+        {
+          "name": "PURPOSE",
+          "required": false,
+          "description": "What the review is for",
+          "example": "a vendor security review"
+        }
+      ],
+      "examples": [
+        "What public evidence is there of Northwind's security and compliance?",
+        "We're reviewing Northwind as a vendor. Which certifications does it claim?",
+        "Has a breach or a security incident been reported about Initech?",
+        "Is Northwind SOC 2 compliant, yes or no?",
+        "Globex sent us a security questionnaire about Northwind. What is public on its security?",
+        "It's the quarterly vendor review. What changed in Northwind's security claims?"
+      ],
+      "playbook": "List the public evidence of {COMPANY}'s security and compliance. It is for: {PURPOSE}.\n\nUse the LMTY MCP tools. Its public profiles need no sign-in. If the tools are not available, say so and stop: the server is `https://mcp.lmty.com/mcp`.\n\nAt most 8 tool calls.\n\n1. Call search_profiles for \"{COMPANY}\". A certification can sit on the company's profile or its product's: take both. If the search returns one, the other is among its overview's closest relations. If several match, ask which.\n2. Call get_profile for each: `factKinds` counts the certification facts and `counts` the timeline entries.\n3. For each profile that counts any, call get_profile with sections [\"facts\"] and factKinds [\"certification\"]. A fact is a name, a grade and a source: add no type, year, auditor or scope. The kind also holds laws and frameworks (list them as stated claims, not certifications) and credentials people hold (list them apart, as held by staff). Two spellings stay two rows.\n4. For each profile, call get_profile with sections [\"timeline\"] and limit 50. Pick by `kind` and `statement` the entries on a security incident, a certification no longer listed, or a certification or trust page first seen.\n5. Write, in order:\n   - Title and first line: a checklist of public evidence, not a security approval\n   - Coverage: profiles read, facts read of how many, timeline entries read of how many\n   - If I asked yes or no (\"are they compliant?\"): \"The record cannot answer that\", why, then what the record holds\n   - Claims (at most 15): what is claimed, who states it, the page, the grade, last seen. Every row is \"the vendor states\", or the other party by name, never \"is certified\" or \"is compliant\". Say in one line what official and reported mean\n   - One unverified source says: any claim graded chatter, apart, never in the table\n   - Not on record for each claim: the report's date, the period covered, the scope, the auditor, an expiration date. Always listed\n   - Incidents on record (at most 10): one row per incident, not per report, with every report as a source. Date it by `atBasis` (published is \"reported on\"); a merged row takes the strongest basis and its earliest date. Unsure if two are one: two rows, saying so. Outages filed as incidents: one line of their own, never called a breach\n   - Changes (at most 8): \"first seen on\", never added or new, for a first sighting or a page that now lists a name; \"no longer listed as of\", never lost or revoked, when a page stopped listing a name (take the page from the entry's source, not its statement). If a fact and the timeline disagree, give both and say so; on one page, with the fact seen later, write \"listed again as of\"\n   - What to ask the vendor for (at most 6), each tied to a row: the report itself, its date and scope, a bridge letter, an incident's post-mortem\n\nWith no certification fact and no security entry, write only what was read, that nothing is on LMTY's record, and what to ask the vendor for.\n\nIf you ran this before for {COMPANY} (in this conversation or your client's memory, never a file search), lead with what was first seen or is no longer listed since then. With none, say this run is the baseline.\n\nRules: Keep every statement's grade; chatter means one unverified source and is never stated as fact. Nothing from memory: no certification, framework, auditor or breach not on the record. An absence is \"not on LMTY's record\", never \"has none\" or \"no breaches\". No verdict, score or advice. Anything from outside LMTY goes only in a last section, \"From the assistant's own web search\", with link and date."
+    },
+    {
+      "skill": "competitive-asset-audit",
+      "family": "competitive",
+      "title": "Asset Audit",
+      "audience": [
+        "Marketing",
+        "Sales"
+      ],
+      "cadence": "Quarterly",
+      "when": "Quarterly, and on demand after a large market change. A repeat run should lead with claims that changed standing since the last audit, matched by claim and asset, and the changes recorded since its date.",
+      "connect": "account",
+      "summary": "Check the competitive claims in your battlecards, decks or pages against current evidence, and see which to fix first.",
+      "delivers": "Each claim marked current, stale, unsupported, contradicted or unknown, with its source and date, ranked by who sees it and what it costs if acted on, and who should fix it.",
+      "inputs": [
+        {
+          "name": "ASSETS",
+          "required": true,
+          "description": "Paste the battlecards, decks or pages to check, or give their public web addresses",
+          "example": "Our Northwind battlecard, pasted below"
+        },
+        {
+          "name": "APPROVED_FACTS",
+          "required": false,
+          "description": "Your approved facts about your own product, such as prices, certifications and references. Without them, claims about your product are marked unknown",
+          "example": "SOC 2 Type II since March 2026; Pro plan $12 per user"
+        }
+      ],
+      "examples": [
+        "Audit our competitive materials for stale claims.",
+        "Is our Northwind battlecard still accurate?",
+        "Find the weak competitive claims in this launch brief.",
+        "Which claims across our battlecards and comparison pages can we no longer support?",
+        "Northwind changed its pricing. What across our materials does that touch?",
+        "Check these three pages against what we know about Initech today."
+      ],
+      "playbook": "Check the competitive claims in these assets against current evidence and list how each holds up. Rewrite nothing.\n\nAssets: {ASSETS}\nApproved facts about our product: {APPROVED_FACTS}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my LMTY account. A sign-in request is not a lost connection: say once that this needs my account, and stop. This audits what I gave you, not every asset we have: say so in the first line.\n\n1. Call list_products and list_competitors. List the material claims (a buyer or rep could act on them; framing is not a claim), one entry per claim with every asset it sits in. A claim that varies across assets is a finding.\n2. For each competitor named: get_freshness for its own as-of date, get_report one section at a time for the claim's subject, get_evidence for source, confidence and dates. Confidence none is unknown.\n3. For a price, plan, certification, customer or wording claim, and for a competitor I do not track: search_profiles, confirm by website, then get_profile with the sections the claim needs (overview for plans on sale, pricing for the price history, customers, facts for taglines and proof points). Where profile and report differ, give both with dates.\n4. Mark each claim supported and current | supported but stale | unsupported | contradicted | unknown, with source and date. A figure behind a newer source is stale when the asset is older than the source. Unsupported only when a full list for its kind (approved claims, references, prices) is silent; a partial source that is silent means unknown. Claims about our product are unknown without approved facts, and contradicted, not unsupported, when the approved facts deny them. A supported claim whose only voice is the party it flatters is that party's own claim: say whose.\n5. Always call get_report_changes with since at the oldest asset's date and limit 50, then the next page while nextCursor is not null, and get_market_feed with family \"event\" for each competitor. A report change is dated by when LMTY recorded it: write \"recorded on\". An event's date is the change's own only when atBasis is occurred; published is \"reported on\", observed \"seen on\". Several entries about one move are one change. With no change found, write \"no dated change found between [date] and [date]\", never \"always weak\".\n6. Rank what needs attention by how many people see it and what acting on it costs, and say the order is your judgment. Name who should fix each.\n\nOpen with: read [n] of [m] assets; evidence checked for [n] of [m] competitors; changes read back to [date], [n] entries. Then a count by mark, the ranked claims (up to ten), the rest by mark, and one row per competitor with its as-of date.\n\nIf you have audited these assets before, lead with claims that changed standing since then, reading events with recordedSince from that date. With no earlier run in view, say this one is the baseline.\n\nRules: No mark is a guess: never \"likely holds\" or \"probably true\"; say what was checked and what would settle it. Nothing from memory: a competitor's price, plan, customer, certification or date comes only from a tool result, my material, or a page read now. A page read outside LMTY is marked as your own reading with its link and date read, never replaces a figure LMTY holds, and is never the only basis for stale or contradicted. Not found is \"not on LMTY's record as of [date]\", never \"they have no\" or \"removed\". A public post never supports a claim about customers or how many."
+    },
+    {
+      "skill": "competitive-battlecard",
+      "family": "competitive",
+      "title": "Battlecard",
+      "audience": [
+        "Sales",
+        "Marketing",
+        "Customer success"
+      ],
+      "cadence": "On demand",
+      "when": "On demand. A card is refreshed by `competitive-enablement-refresh` when something changes.",
+      "connect": "account",
+      "summary": "Build a battlecard against one competitor - where they're strong, where you differ, what to ask, and when to walk away.",
+      "delivers": "A one-page card: the competitor's facts with sources and dates, up to three differences, discovery questions, objections only from your deal notes, and what the card is missing.",
+      "inputs": [
+        {
+          "name": "COMPETITOR",
+          "required": true,
+          "description": "The competitor the card is for, as you track it in LMTY",
+          "example": "Northwind"
+        },
+        {
+          "name": "SEGMENT",
+          "required": false,
+          "description": "The buyers the card is for, if it's for one segment",
+          "example": "mid-market IT teams"
+        },
+        {
+          "name": "DEAL_EVIDENCE",
+          "required": false,
+          "description": "Paste call notes, win/loss interviews or approved proof. Without them the card leaves out objections and win reasons",
+          "example": "Three lost deals in Q3: each buyer said Northwind's audit trail decided it"
+        }
+      ],
+      "examples": [
+        "Build a battlecard for us vs Northwind.",
+        "Our reps keep meeting Initech in mid-market deals and have nothing to go on. Make them a card.",
+        "Create enterprise battlecards for our top three competitors.",
+        "Rebuild our Northwind card from scratch; the old one is two years old.",
+        "We need a one-page us-vs-them for CS to use on renewals where Northwind comes up.",
+        "Turn these five win/loss interviews into a field card against Initech."
+      ],
+      "playbook": "Build a battlecard for my product against {COMPETITOR}, for {SEGMENT}. My deal evidence: {DEAL_EVIDENCE}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. Call search_profiles for a company named here before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: say so once, ask which product is mine, and use public profiles only. This prompt reaches no calls, CRM or win/loss: why buyers choose, object and decide comes only from what I pasted above.\n\n1. Call list_products and name my product once.\n2. Call list_competitors and match {COMPETITOR} to its tracked name. If it is not tracked, say so and read it from its public profile alone.\n3. If tracked: get_competitor (its profile block is for orientation only), get_freshness for its as-of date, get_evidence with its competitorId for confidence and dates, and get_report one section at a time for positioning, pricing and capabilities, taking keys from the answer.\n4. Call search_profiles for {COMPETITOR}, confirm it by website, then get_profile: the overview for plans on sale now, sections [\"pricing\"] for dated price moves, [\"facts\"] with factKinds tagline, category_claim, proof_point and certification, and [\"timeline\"]. Where profile and report disagree, give both with dates.\n5. Call get_market_feed with family \"event\" and its competitorId, and get_report_changes with since 90 days back (on a rebuild, the old card's date) and limit 50, then the next page while nextCursor is not null. Say how many were read and the dates they span.\n6. Where they are strong: each line says who states it (\"per its pricing page\", \"reported by\"). A number only they state is their own claim.\n7. Up to three differences, each with source, date and basis (N deals, one deal, or a hypothesis from public differences). None rests on something not found on their side. LMTY's view of my product is not proof.\n8. Up to five discovery questions that expose trade-offs, none depending on a claim that they lack something.\n9. Objections and win reasons only from what I pasted, with how many calls or deals. Otherwise one line each: what is missing and what would fill it. No \"likely\" objections.\n10. Recent changes, up to five: an event's date by its atBasis (\"reported on\" for published, \"seen on\" for observed, never \"new\"); a report change \"recorded on\". Skip created changes.\n11. When we may not be the best fit, and what the card lacks.\n\nWrite a first line saying what was read, then: 30-second read, why us, questions, objections, where they are strong, when we may not fit, recent changes, what the card lacks.\n\nRules: Nothing about either company from memory. Not found is \"not observed in the sources checked, as of [date]\", never \"they don't have\". A page read outside LMTY is marked in place with its link and date read, never replaces a figure LMTY holds, and is never the only basis for a line a rep says. Mark any recommendation as your judgment. Read no public posts. The card is internal: a comparison document for a buyer is not something this writes."
+    },
+    {
+      "skill": "competitive-deal-prep",
+      "family": "competitive",
+      "title": "Deal Prep",
+      "audience": [
+        "Sales"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, once per meeting. A later meeting on the same deal is a repeat run. A repeat run should lead with which of the last prep's three questions were answered, and what moved in the record and on the competitor's side since.",
+      "connect": "account",
+      "summary": "Prep for the next meeting on one competitive deal - who you're up against, what the buyer said matters, and the three questions to answer.",
+      "delivers": "Who is in the deal and on what evidence, the buyer's priorities in their words, the competitor's side with dates, the three questions for the meeting, proof to bring, and the risks.",
+      "inputs": [
+        {
+          "name": "ACCOUNT",
+          "required": true,
+          "description": "The account or opportunity you're preparing for",
+          "example": "Globex"
+        },
+        {
+          "name": "DEAL_NOTES",
+          "required": true,
+          "description": "Paste what you have on the deal - what the buyer said and who said it, the stage, the next meeting. The prep can only be as good as these notes",
+          "example": "Discovery call 12 Nov with Globex IT lead: \"if we can't pass the security review nothing else matters\". Next meeting Thursday with procurement."
+        },
+        {
+          "name": "COMPETITORS",
+          "required": false,
+          "description": "The competitors you believe are in the deal, if you know",
+          "example": "Northwind"
+        }
+      ],
+      "examples": [
+        "Prep me for the Globex deal.",
+        "We're up against Northwind at Globex. What should the team know before Thursday?",
+        "I have a call with Globex tomorrow and Northwind is in it.",
+        "The Globex opportunity has stalled. What's the competitive picture?",
+        "Globex wants a bake-off with Initech next week. Get the account team ready for it.",
+        "Here are my notes from the Globex discovery call. Prep the next meeting."
+      ],
+      "playbook": "Prep me for the next meeting on the {ACCOUNT} deal. Competitors I believe are in it: {COMPETITORS}. My notes:\n\n{DEAL_NOTES}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. Call search_profiles for a company named here before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: say so once, ask which product is mine, and use public profiles only. This prompt cannot reach my CRM or call recordings: the deal side comes only from my notes above. If {ACCOUNT} names no account (\"a bank\" is a kind of company, not an account), ask which account and stop. If my notes hold nothing the buyer said, give the short form and say so in its first line: the deal as I report it, who is in it, the three questions, risks and unknowns, competitor changes, and before the meeting. No criteria, objections or proof list.\n\n1. Call list_products and name my product once.\n2. Who is in the deal, from my notes, each with its evidence: buyer named it, CRM field, my note, or assumed. A vendor listing {ACCOUNT} as a customer is its claim: assumed, and a question.\n3. Call list_competitors to match each to its tracked name. One not tracked: search_profiles, confirmed by website, and say it was read from its profile alone.\n4. Quote what the buyer said, with who and when. Split criteria into confirmed by the buyer and assumed by the team; where my notes disagree, show both.\n5. Per tracked competitor: get_evidence with its competitorId and get_freshness for its as-of date; get_report only for sections bearing on the confirmed criteria. From get_profile: sections [\"pricing\"], [\"facts\"] with factKinds certification, and [\"timeline\"]. Say where it is stronger, where we are (with proof from my notes only), and where neither is known. A strength only it states is its own claim.\n6. get_market_feed with family \"event\" and its competitorId, and get_report_changes with since at the last meeting and limit 50, then the next page while nextCursor is not null. Keep only changes this account would notice, up to five, with N of M read.\n7. The three questions the meeting must answer: which requirement is hard, who decides and against what, what the buyer already believes about a competitor.\n8. Objections only if my notes show this account raised them. Proof only from what I pasted, otherwise \"no approved proof\".\n9. Risks and unknowns, never empty, and a short checklist for before the meeting.\n\nWrite a first line saying what was read (my notes, which competitors, how many changes, as-of dates), then the prep.\n\nRules: The buyer's words outrank my notes about them. Nothing about the buyer, the competitor or past deals from memory. Not found is \"not on LMTY's record\" or \"not observed, as of [date]\", never \"they don't have\". An event's date by its atBasis: \"reported on\" for published, \"seen on\" for observed, never \"new\"; a report change \"recorded on\"; skip created changes. A page read outside LMTY is marked in place with its link and date read, and never replaces a figure LMTY holds. Mark recommendations as your judgment. One deal is one deal."
+    },
+    {
+      "skill": "competitive-enablement-refresh",
+      "family": "competitive",
+      "title": "Enablement Refresh",
+      "audience": [
+        "Marketing",
+        "Sales"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, when a change makes existing material wrong.",
+      "connect": "account",
+      "summary": "Update a battlecard or talk track after a competitor changes something, with proof and a date for every new line.",
+      "delivers": "The change and how its date is known, each claim in your card marked current, stale, unsupported or incomplete, new lines with their proof and date, and what can stay as it is.",
+      "inputs": [
+        {
+          "name": "ASSET",
+          "required": true,
+          "description": "Paste the battlecard, talk track or deck section to update",
+          "example": "Our Northwind talk track, pasted below"
+        },
+        {
+          "name": "COMPETITOR",
+          "required": true,
+          "description": "The competitor the asset is about, as you track it in LMTY",
+          "example": "Northwind"
+        },
+        {
+          "name": "CHANGE",
+          "required": false,
+          "description": "The change that prompted this, if you know it. Leave it empty to have recent changes checked",
+          "example": "Northwind raised its Standard plan price"
+        }
+      ],
+      "examples": [
+        "Northwind changed its pricing. Update our talk track and battlecard.",
+        "What in our Initech enablement does this change make stale, and what should it say now?",
+        "Sales wants to say we're faster than Northwind. Can we, and what's the line?",
+        "Reps keep asking about Initech's new integration. Update the card so it answers that.",
+        "We just got SOC 2. Which competitive lines need to change?"
+      ],
+      "playbook": "Update this enablement about {COMPETITOR} so it is true again, changing only what the evidence requires.\n\nAsset: {ASSET}\nChange that prompted it: {CHANGE}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my LMTY account. Call search_profiles for {COMPETITOR} before list_products. A sign-in request is not a lost connection: say once that this needs my account, and stop. I have pasted the asset, so field questions and whether reps open it were not checked: say so in one line. If the asset carries no last-updated date, ask me for it; if I do not know, read back 90 days and say so.\n\n1. Call list_products and list_competitors to resolve {COMPETITOR}. Pull the claims out of the asset as short statements, one per claim.\n2. Call get_report_changes with since at the asset's last-updated date and limit 50, then the next page while nextCursor is not null, and keep the entries about {COMPETITOR}; then get_market_feed with family \"event\" and its competitorId. Several entries about one move are one change. Say how far back you read.\n3. For what is true now: get_freshness for its as-of date, get_report one section at a time, get_evidence for proof and dates. For a price, plan, certification or customer line: search_profiles, confirm by website, then get_profile (overview for plans on sale, pricing for the price history with before-and-after values).\n4. Class each claim current | stale | unsupported | incomplete, with why. Stale needs the change that staled it. Claims about our own product are \"not checked\" unless I pasted approved proof. One that my approved proof denies is unsupported, with the reason \"denied by the approved claims\" first, and gets no new line, not even \"once approved...\".\n5. Order the lines by what it would cost a rep to say the old one to a buyer today. Say the order is your judgment.\n6. For each line to change: Was | Now | Proof | Date, and how it is known. The change's own date only where an event's atBasis is occurred, or the price history or announcement states it; \"reported on\" for a published date; \"LMTY recorded it on\" for a report change. Where a new line reverses an old one, add a history note that never says \"on [date] they did\" from a recorded date.\n7. List what stays unchanged (up to ten lines). If no claim is touched, say so in one sentence and stop.\n\nStart with: changes read back to [date], [n] entries; [n] claims in the asset.\n\nRules: A new line says no more than its evidence. A plan, logo or page no longer shown is \"no longer listed as of [date]\", never \"removed\", \"dropped\" or \"churned\". Nothing from memory: a figure or date comes only from a tool result, my material or a page read now; a page read outside LMTY is marked as your own reading with link and date read, never replaces what LMTY holds, and never alone carries a line a rep will say. What a competitor says about itself is worded as their statement, with page and date. If a line I want cannot be supported, give the supportable version; do not soften it into a vaguer claim. Posts count as what posts say, never as what customers do."
+    },
+    {
+      "skill": "competitive-executive-market-brief",
+      "family": "competitive",
+      "title": "Executive Market Brief",
+      "audience": [
+        "Marketing",
+        "Leadership"
+      ],
+      "cadence": "Quarterly",
+      "when": "Quarterly, for the leadership review or board meeting it prepares, and on demand before any other meeting or decision. A repeat run should lead with the decision questions that are new or have changed since the last brief.",
+      "connect": "account",
+      "summary": "Prepare leadership for a meeting with the few competitor moves that matter, the risks and openings, and the questions to decide.",
+      "delivers": "A one-page brief - three moves with dates and sources, why each may matter, up to three risks and openings, what is not worth reacting to yet, and the questions for leadership.",
+      "inputs": [
+        {
+          "name": "MEETING",
+          "required": true,
+          "description": "Who the brief is for and what the meeting will decide",
+          "example": "Q4 board meeting, deciding next year's pricing and launch plan"
+        },
+        {
+          "name": "PRIORITIES",
+          "required": false,
+          "description": "Your company's current priorities, pasted in. Without them the brief asks questions instead of linking moves to your plans",
+          "example": "Move upmarket to 500+ seat accounts; ship the AI assistant in Q1"
+        },
+        {
+          "name": "PERIOD",
+          "required": false,
+          "description": "The period to cover, if not the last 90 days",
+          "example": "since July 1"
+        },
+        {
+          "name": "PRODUCT",
+          "required": false,
+          "description": "Your product, if your LMTY account has more than one",
+          "example": "Acme"
+        }
+      ],
+      "examples": [
+        "Prepare the competitive section for our QBR.",
+        "I have a board meeting Friday. What market changes could blindside me?",
+        "Brief the CPO on what changed this quarter and the roadmap questions it raises.",
+        "Turn this month's LMTY activity into a CEO-ready one-pager.",
+        "What should leadership discuss based on the last 90 days of competitor movement?",
+        "Give the CRO the three competitor moves that matter for next quarter's plan."
+      ],
+      "playbook": "Prepare an executive market brief for {MEETING}. Our priorities: {PRIORITIES}. Period: {PERIOD}. Product: {PRODUCT}. A blank period is the last 90 days; a blank product is the one on my account.\n\nWhat this prompt cannot do: it cannot see our deals, calls or roadmap. It links market moves to the priorities pasted above and nothing else. With no priorities pasted, say so in the first line, and write decision questions, not recommendations.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. A sign-in request is not a lost connection: say once that this needs my account, and stop.\n\n1. Call list_products, then list_competitors and get_freshness. With several products and none named, list them in one line and stop.\n2. Call get_report_changes with since at the period start and limit 50, then the next page while nextCursor is not null; skip `created` entries. Call get_market_feed with family \"event\" and since at the period start, paging to the end. If an earlier brief of this kind is visible and the period starts where it ended, use recordedSince there, not since: an event LMTY found late has an older date of its own. If the server ignores recordedSince, read the last 30 days with since and drop the eventIds that brief listed. Say how many of each you read, back to which date, and which competitors were not refreshed in the period. If the latest refresh is more than a week before the period ends, give its date in the first line and say nothing after it is covered.\n3. Pick the three items that touch the priorities, or without them that rank highest on business impact, evidence strength, time sensitivity and how costly a wrong call would be. Say the selection is yours and what decided it.\n4. For each, call get_evidence or get_market_event, and read the competitor's public profile (search_profiles, then get_profile with sections [\"timeline\", \"pricing\"]) for a date of the move's own and its values.\n5. Write: a Read line with the counts; the answer in 3 to 5 sentences; three items, each with what happened (who says it, the date and how it is known), why it matters marked as your reading, the source, and a decision question naming the evidence that would answer it.\n6. Then at most three risks, each tied to an item; at most three openings, worded as hypotheses; what is not yet worth reacting to, which is the only place for an item resting on one unverified post, with what would settle it; an appendix of claim, source, date and confidence.\n7. If nothing in the period touches the priorities, say so in one sentence and give only what is not worth reacting to and the questions that stand regardless.\n\nRules: A change record's asOf is when LMTY recorded it: \"recorded on\". It does not place a move in this quarter. Word an event's date by atBasis: occurred is when it happened, published \"reported on\", observed \"seen on\". LMTY's significance and implication are its judgments, cited as LMTY's. No motives. No \"we should\" or \"do not\": write the decision and the evidence it needs. A competitor's own figure is its claim. \"No change recorded\" is not \"stable\". Nothing from memory. A fact you read outside LMTY is marked \"my own read of [page], [date]\" and never replaces the record. One page; two for a board."
+    },
+    {
+      "skill": "competitive-launch-readiness",
+      "family": "competitive",
+      "title": "Launch Readiness",
+      "audience": [
+        "Marketing",
+        "Product",
+        "Sales"
+      ],
+      "cadence": "On demand",
+      "when": "On demand. Weekly in the last weeks before a launch date. A repeat run should lead with what moved in the decision set since the last run and which posture or claim it changes.",
+      "connect": "account",
+      "summary": "Check a launch against the competitors that matter, see where it is ahead, level or behind, and which claims will hold up.",
+      "delivers": "The competitors that matter and why, where the release stands on each point buyers weigh, claims to make and to qualify with their evidence, and up to five gaps to close before launch.",
+      "inputs": [
+        {
+          "name": "RELEASE",
+          "required": true,
+          "description": "What is shipping and who it is for, in a short paragraph",
+          "example": "Audit log export for admins on the Business plan, so security teams can hand evidence to their auditors"
+        },
+        {
+          "name": "LAUNCH_DATE",
+          "required": false,
+          "description": "The day it goes out, if one is set",
+          "example": "December 8"
+        },
+        {
+          "name": "COMPETITORS",
+          "required": false,
+          "description": "The competitors you want it compared with. Leave empty to pick from the ones you track",
+          "example": "Northwind, Initech"
+        }
+      ],
+      "examples": [
+        "Pressure-test this launch against our competitors.",
+        "Here is the PRD. What do I need to know competitively before we launch?",
+        "Build the competitive section of my launch brief.",
+        "Northwind just shipped something similar. Does that change how we should launch this?",
+        "Tell me whether this is parity, catch-up, or real differentiation.",
+        "We launch in three weeks. Has anything moved with Northwind or Initech since last week?"
+      ],
+      "playbook": "Check this launch against the competitors that matter: {RELEASE}. Launch date: {LAUNCH_DATE}. Compare with: {COMPETITORS}.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in. Call search_profiles for the competitors I named before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: read them with get_profile, say there is no tracked set or change history, and ask who our product is if the release does not say. If {RELEASE} is only a feature's name, ask what ships and for whom, and stop.\n\n1. Restate the release as one claim: what changed, for whom, what job it improves.\n2. Call list_products, then list_competitors. Use the ones I named, or pick at most 5 that matter for this release. Say why each, how many of the tracked set that is, and who was left out.\n3. Call get_report one `section` at a time for the capability, positioning and pricing. Keys: products_capabilities, positioning_differentiators, pricing_packaging. Call get_freshness for each competitor's as-of date.\n4. Call get_report_changes with since 90 days back and limit 50, then the next page while nextCursor is not null. Say whether the history reaches that far, and how many were read. A change's date is when LMTY recorded it: write \"recorded on\".\n5. For each picked competitor: get_market_feed with its competitorId, family \"event\" and `since` 90 days back (on a repeat run, `recordedSince` the last run's date). Then search_profiles (confirm by website), get_profile sections [\"timeline\", \"facts\"] for dated launches and its own taglines and proof points, and get_calendar with upcomingOnly for what is announced near the launch date. Word each date by its `atBasis`: occurred is the event's date, published is \"reported on\", observed is \"seen on\".\n6. For each competitor capability say shipped, announced or only marketed, and who says so: \"Northwind's page states\", not \"Northwind has\".\n7. Class each dimension as Category expectation, Parity, Differentiated, Catch-up, Unproven or Vulnerable, saying what the label means. Where the competitor side is only silence, write \"not observed in the sources read, as of\" the date, and class it Unproven.\n8. At most 5 claims we can support, each with its evidence and date; at most 5 to avoid or qualify, each with what would make it supportable; at most 5 gaps before launch.\n9. Say what was not read. With no source on a competitor I named, say so, and offer once, at the end, to work in what I can paste about it: its pages, release notes, deal notes.\n\nIf you have run this before for this release, lead with what moved since then and which posture or claim it changes. An earlier run is one in this conversation or your client's memory: do not search files. With none, this run is the baseline.\n\nWrite: Freshness line | The release in customer terms | Decision set (table) | Where the launch stands (table) | Claims to support | Claims to avoid or qualify | Gaps before launch | Not read.\n\nRules: Nothing about a competitor from memory: every price, plan, date and wording comes from a tool result, from what I gave you, or from a page you read now, marked as your own reading with its link and the date read. What was not found is \"not observed\", never \"has no\", \"the only\" or \"first\". Never say who shipped first on a recorded or first-seen date. LMTY's `implication` and `significanceScore` are its judgments: cite them as LMTY's. No motive for any competitor. A post or review is one person's account, never \"customers expect\". Postures and claims are your judgment: give the evidence each rests on."
+    },
+    {
+      "skill": "competitive-market-briefing",
+      "family": "competitive",
+      "title": "Market Briefing",
+      "audience": [
+        "Marketing",
+        "Sales",
+        "Product"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly, or monthly for a quieter market. A repeat run should lead with what LMTY recorded since the last briefing and what moved among the items it reported.",
+      "connect": "account",
+      "summary": "Brief your team on what changed across your tracked competitors this week, ranked, with a date and a source for each item.",
+      "delivers": "Up to three items, each with what changed, its date and source, and why it may matter; a short watchlist; the competitors with nothing new; and how much was read.",
+      "inputs": [
+        {
+          "name": "PRODUCT",
+          "required": false,
+          "description": "Your product, if your LMTY account has more than one",
+          "example": "Acme"
+        },
+        {
+          "name": "PERIOD",
+          "required": false,
+          "description": "The period to cover, if not the last 7 days",
+          "example": "the last 30 days"
+        }
+      ],
+      "examples": [
+        "Give me this week's competitive briefing.",
+        "What changed across our competitors in August?",
+        "What should sales learn this week about the competitive landscape?",
+        "Turn LMTY's latest changes into a Slack-ready PMM update.",
+        "What mattered this month and what should we keep watching?",
+        "Every Monday, post a competitive briefing to our team channel."
+      ],
+      "playbook": "Brief me on what changed across my product's tracked competitors. Product: {PRODUCT}. Period: {PERIOD}. If either is blank: the one product on my account, the last 7 days.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. A sign-in request is not a lost connection: say once that this needs my account, and stop. Call list_products first. With several products and none named, list them in one line and stop. With none, ask which product and competitors to cover, and stop.\n\n1. Look for the last briefing in this conversation or your client's memory; never search files. With one, start the period where its \"Covered\" line ends. With none on a scheduled run, open with \"The previous briefing could not be seen: this covers [dates]\" and use no continuity labels.\n2. Call list_competitors, get_freshness and get_recent_activity. Note competitors not refreshed in the period, paused refreshes, and competitors added in it: their records are first captures, not changes. LMTY's record begins at the oldest get_recent_activity entry, paged to the end: if that is inside the period, say so in the first line, and what LMTY captured that day is what it held, not a change.\n3. Call get_market_feed with family \"event\" and recordedSince at the period start, paging until nextCursor is null. Say \"N events read\". If the server ignores recordedSince, read the last 30 days with since and drop the eventIds the last briefing listed.\n4. Call get_report_changes with since at the period start and limit 50, then the next page while nextCursor is not null. Skip `created` entries. Say how many you read and back to which date. If you stop sooner, the period is what you reached.\n5. Merge entries about one change. Leave out what the last briefing reported unless it moved. Before calling an item new, check that competitor's earlier change records and profile timeline; if they hold it, say when LMTY first recorded it. Rank by relevance to my product, magnitude, novelty, time sensitivity and evidence quality, and say the order is yours.\n6. At most 3 items (5 for a month). Each: what the source says, its date and how it is known, the source link (get_market_event or get_evidence), and why it may matter, marked as your reading. For a date of its own and before and after values, read the competitor's public profile: search_profiles, confirm by its website, then get_profile with sections [\"pricing\", \"timeline\"].\n7. At most 3 watchlist items. Then each competitor with no change recorded, with its last refresh date.\n8. End with \"Covered: [start] to [end, UTC]. Event ids reported: [ids].\" Nothing follows it.\n\nIf nothing new was recorded: the period, the coverage line, \"No change recorded since [date]\", the competitors not refreshed, the Covered line, and stop. If nothing was refreshed in the period, give the last refresh of the report and of each competitor after the period line, say the period is not covered, and end the Covered line at the latest refresh.\n\nRules: A change record's asOf is when LMTY recorded it: write \"recorded on\". Word an event's date by atBasis: occurred is when it happened, published is \"reported on\", observed is \"seen on\" and never \"new\" or \"this week\". LMTY's significance and implication are its judgments: quote them as LMTY's and never rank on them. No motives. \"No change recorded\" is never \"quiet\" or \"stable\". A competitor's claim about itself is its statement. Nothing from memory. A fact you read outside LMTY is marked \"my own read of [page], [date]\" with its link, and never replaces the record. Under 400 words outside the table."
+    },
+    {
+      "skill": "competitive-market-shift-analysis",
+      "family": "competitive",
+      "title": "Market Shift Analysis",
+      "audience": [
+        "Marketing",
+        "Product",
+        "Leadership"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, when a pattern of signals needs a verdict, and monthly for a hypothesis being watched. A repeat run should lead with whether the classification moved and which signal moved it.",
+      "connect": "account",
+      "summary": "Test whether a trend you are seeing across competitors is real, how far the evidence goes, and what would change the answer.",
+      "delivers": "A verdict from noise to established expectation, with the bar it did not clear, a dated list of signals, what would prove it wrong, and three signals to watch next.",
+      "inputs": [
+        {
+          "name": "HYPOTHESIS",
+          "required": true,
+          "description": "The trend you want tested, in your own words",
+          "example": "Everyone is moving AI features into their base plans"
+        },
+        {
+          "name": "COMPANIES",
+          "required": false,
+          "description": "Companies to include beyond your tracked competitors, or the ones to read if you are not signed in",
+          "example": "Northwind, Initech"
+        },
+        {
+          "name": "BUYER_EVIDENCE",
+          "required": false,
+          "description": "What your buyers have said or done about it, pasted in - call notes, lost-deal reasons, survey answers",
+          "example": "4 of the last 20 enterprise RFPs asked for AI in the base plan"
+        }
+      ],
+      "examples": [
+        "Everyone is adding AI. Is this actually a market shift or just noise?",
+        "Three competitors changed packaging. What is happening?",
+        "Are we seeing a real move upmarket in this category?",
+        "What would have to happen before we treat this as table stakes?",
+        "Analyze the last 90 days of changes and tell me which patterns are real.",
+        "Northwind and Initech both started calling themselves an operations platform. Is the category moving?"
+      ],
+      "playbook": "Tell me whether this is a real market shift: {HYPOTHESIS}. Also read: {COMPANIES}. Buyer evidence: {BUYER_EVIDENCE}.\n\nWhat this prompt cannot do: it cannot see our deals or calls. LMTY holds no buyer evidence, so without buyer evidence pasted above the verdict cannot pass \"Emerging shift\". Say so in the first lines when that is the case.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`).\n\n1. Restate the hypothesis as one falsifiable sentence and say the framing is yours. Go on without waiting.\n2. For each company in the pattern, call search_profiles, confirm it by its website, and call get_profile with sections [\"terms\", \"timeline\", \"pricing\"] (add \"hiring\" or \"statements\" when the hypothesis is about those). Then call list_products and list_competitors; if they ask for sign-in or return nothing, that is not a lost connection: work from the companies named above.\n3. Signed in: call get_report_changes with since at the period start and limit 50, then the next page while nextCursor is not null, and get_market_feed with family \"event\", paging to the end. Say how many records you read, back to which date, and K of M companies read. A company not read is \"not read\". If the oldest get_recent_activity entry, paged to the end, falls inside the period, say first that LMTY's record begins on that date.\n4. Build a ledger of at most 12 signals: date and how it is known, signal, source, independent or not, evidence quality. Merge signals that trace to one event. Include signals from outside the tracked set, and say the analysis was not restricted to it.\n5. Classify, starting at Noise. Isolated move: one credible dated signal. Emerging shift: independent subjects, and at least one signal from a source other than the vendors themselves (press, an analyst, a customer); a vendor's own page, docs or post is a vendor source, so several vendors each describing their own move stay Isolated move. Accelerating: that plus buyer-side evidence. Established: buyers screen for it. Cap at the weakest link.\n6. Say which bar was not met and what would clear it, what would falsify the reading, and three signals to watch with where to look and when.\n\nRules: A change record's asOf is when LMTY recorded it, and an observed date is when LMTY first saw a thing: both count toward how many players have it, never toward timing or \"accelerating\". A reported-on date places the report, not the move, and shows no sequence. Say how many signals have a date of their own. A vendor's page is primary for what it offers and charges; what it says about its customers is its own claim, never buyer evidence. Posts are people saying something: count posts and authors, never customers. Noise means the evidence read shows no pattern, not that there is none. No motives. Name decisions; do not make them. Nothing from memory. A signal you read outside LMTY is marked \"my own read of [page], [date]\" in its source and never alone lifts the verdict."
+    },
+    {
+      "skill": "competitive-messaging-audit",
+      "family": "competitive",
+      "title": "Messaging Audit",
+      "audience": [
+        "Marketing",
+        "Product"
+      ],
+      "cadence": "Quarterly",
+      "when": "Quarterly, and on demand when copy is about to ship or a competitor relaunches. A repeat run should lead with claims whose mark changed since the last audit and competitor wording first recorded since then.",
+      "connect": "account",
+      "summary": "Test whether your homepage or message still sets you apart from what competitors now say, and see which questions are really about positioning.",
+      "delivers": "Your message laid out by layer, each claim marked still distinct, converged or parity, with competitors' wording quoted and dated, what was not tested, and up to seven changes to consider.",
+      "inputs": [
+        {
+          "name": "MESSAGE",
+          "required": true,
+          "description": "Paste the homepage, message hierarchy, pitch or campaign copy to test",
+          "example": "Our homepage hero and the three sections under it, pasted below"
+        },
+        {
+          "name": "COMPETITORS",
+          "required": false,
+          "description": "The competitors to compare against. Leave it empty to use the ones you track in LMTY",
+          "example": "Northwind, Initech"
+        }
+      ],
+      "examples": [
+        "Review our homepage messaging. Does it still differentiate us?",
+        "Does our messaging still reflect the market?",
+        "Northwind and Initech started saying 'AI-native' too. What did that break in our message?",
+        "Pressure-test this message hierarchy against how customers actually talk.",
+        "Check this campaign copy against our positioning before it ships.",
+        "How do people word our category in public posts, compared with our homepage?"
+      ],
+      "playbook": "Audit this message against what competitors now say. Do not rewrite it.\n\nMessage: {MESSAGE}\nCompetitors to compare against: {COMPETITORS}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my LMTY account. A sign-in request is not a lost connection: say once that this needs my account, and stop.\n\n1. Call list_products and list_competitors. Lay the message out by layer: category, value, differentiation, proof, call to action, and the audience it seems to address. Note structural findings, such as differentiation with no proof.\n2. For each competitor (the ones I named, else the tracked set): get_freshness for its own as-of date, and get_report one section at a time, starting with positioning and differentiators (take the key from the answer).\n3. For each one's own wording: search_profiles, confirm by website, then get_profile for the overview, then the facts section with factKinds [\"tagline\", \"category_claim\", \"proof_point\", \"boilerplate\"], and the terms section. A competitor I do not track is read from its profile alone.\n4. For each differentiation and value claim: who else says it, quoted with page and date, out of how many competitors read. Mark it still distinct (not found in the [n] of [m] read, as of their dates) | converged | parity stated as difference.\n5. Give \"since\" only from a date of the wording's own: the earliest known use of a term, the end date of wording it replaced, a dated launch. Otherwise write \"on record since [date]; when they began is not known\". get_report_changes and get_market_feed with family \"event\" show what moved, dated by when LMTY recorded or read it: never say who said it first from that order.\n6. Where wording converged, do the products still differ? A capability known only from a competitor's own pages is \"unknown: their own claim only\".\n7. Customer fit: test the message's words against calls or interviews I pasted. With none, and if you can open review-site pages now, test against public reviews of my product and these competitors: each quote labeled \"third-party opinion: review on [site], [date], one reviewer's account\", never \"customers say\" or a count of customers, and say the customer side rests on public reviews alone. With neither, say it was not tested and what would test it.\n8. Up to seven changes to consider, labeled as your judgment, each with its evidence and a confidence with its reason. List separately the findings that are really about the position, for competitive-positioning.\n\nOpen with: competitor wording read for [n] of [m] tracked competitors; customer evidence: [what I gave you, or none]; public reviews: [n read and on which sites, or none].\n\nIf you have audited this message before, lead with claims whose mark changed since then and wording first recorded since then, reading events with recordedSince from that date. With no earlier run in view, say this one is the baseline.\n\nRules: Convergence is about words, not products. Quote competitor wording as written, with page and date, and say whether it came from the report or the profile. Nothing from memory: wording or dates only from a tool result, my material or a page read now; a page read outside LMTY is marked as your own reading with its link and date read, and never replaces wording LMTY holds. \"Still distinct\" is about the competitors read, never the market. A contradicted claim names the source that contradicts it; whether to remove it is my call. Do not re-decide the position, and do not read public posts unless I ask."
+    },
+    {
+      "skill": "competitive-objection-response",
+      "family": "competitive",
+      "title": "Objection Response",
+      "audience": [
+        "Sales",
+        "Customer success"
+      ],
+      "cadence": "On demand",
+      "when": "On demand.",
+      "connect": "account",
+      "summary": "Answer a buyer's objection about a competitor - check whether it's true, then get one thing to say, one question to ask, and what not to claim.",
+      "delivers": "The objection checked against current facts with source and date, a 15-second response, one or two questions to ask, proof if you have it, what not to say, and where the competitor may be stronger.",
+      "inputs": [
+        {
+          "name": "OBJECTION",
+          "required": true,
+          "description": "What the buyer said, in their words if you have them",
+          "example": "Northwind has way more integrations than you"
+        },
+        {
+          "name": "COMPETITOR",
+          "required": false,
+          "description": "The competitor the objection is about, if the objection doesn't name it",
+          "example": "Northwind"
+        },
+        {
+          "name": "PROOF",
+          "required": false,
+          "description": "Paste any approved proof you can use, such as documentation or a customer story you're cleared to share",
+          "example": "Our integrations page, updated 1 November, lists native connectors for the buyer's ticketing and identity systems"
+        }
+      ],
+      "examples": [
+        "The buyer just said Northwind has more integrations. What do I say?",
+        "Globex says Initech is 30% cheaper. How should the rep respond?",
+        "Our prospect told us we don't have audit logging. We do. How do I handle it?",
+        "The Globex security team says Northwind is more secure. Help.",
+        "Buyer says Northwind deploys in a week. Is that true, and what do I ask?",
+        "A rep wants to tell the team we always win on implementation against Initech. Can they, and what should they say to this buyer?"
+      ],
+      "playbook": "A buyer said: \"{OBJECTION}\". The competitor, if the objection doesn't name it: {COMPETITOR}. Approved proof I can use: {PROOF}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. Call search_profiles for a company named here before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: say so once, ask which product is mine, and use public profiles only.\n\n1. Write the objection as given. If I paraphrased, mark it as a paraphrase.\n2. Call list_products, then list_competitors to resolve the competitor. If none can be identified, ask one question listing the tracked names and stop.\n3. Check the premise, about six reads: get_evidence with its competitorId for the signal that bears on it (with confidence and dates), and one get_report section. search_profiles for the competitor, confirmed by website, then get_profile: the overview for plans on sale, [\"pricing\"] for dated price moves, [\"facts\"] with factKinds certification, proof_point or reported_price, [\"connections\"] with connectionKinds [\"integrates_with\"] for integrations. Only if the objection is about a change: get_market_feed with family \"event\" and its competitorId.\n4. Give one label: verified, partly verified, not supported by the sources checked, or unknown, with source, date and LMTY's confidence (none is unknown, not false). A claim only the competitor makes about itself is its own claim. If unknown, name what would check it.\n5. The concern underneath, only as far as the buyer's words support.\n6. A 15-second response a person could say.\n7. One or two questions that change what happens next.\n8. Proof only from what I pasted; otherwise \"no approved proof supplied\".\n9. What not to say, and where they may be stronger.\n\nRules: A count on LMTY's record is how many LMTY has read, never the product's total: write \"N known to LMTY, read N of M\", and do not rule on \"more\" from two counts. The list price is the plan on sale now; what someone says they pay is one person's account. Not found is \"not observed in the sources checked, as of [date]\", never \"they don't have\". An event's date by its atBasis: \"reported on\" for published, \"seen on\" for observed, never \"just\". A `date` in the price history (`pricingHistory`) has no basis until its event is read by `eventId` (get_market_event): until then \"dated [date] in LMTY's price history\". Nothing from memory, reputation included. A page read outside LMTY is marked in place with its link and date read, and never the only basis for the line I say. LMTY's view of my product is not proof. One deal is one deal. Read no public posts. If I also asked for a comparison document, say no skill here writes one; anything for the buyer is a draft."
+    },
+    {
+      "skill": "competitive-poc-rfp-plan",
+      "family": "competitive",
+      "title": "POC and RFP Plan",
+      "audience": [
+        "Sales",
+        "Product"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, once per evaluation; weekly while one is running. A repeat run should lead with the proof events settled since the last run, the unknowns resolved, and any no-go condition now met.",
+      "connect": "account",
+      "summary": "Plan a POC or bake-off against a competitor - which requirements decide it, what to prove, where they're stronger, and when not to compete.",
+      "delivers": "The buyer's requirements sorted into mandatory, table stakes, deciding and irrelevant, both sides of each deciding one with who says so, a proof plan, questions to ask, and when to walk away.",
+      "inputs": [
+        {
+          "name": "COMPETITOR",
+          "required": true,
+          "description": "The competitor in the evaluation, as you track it in LMTY",
+          "example": "Northwind"
+        },
+        {
+          "name": "REQUIREMENTS",
+          "required": false,
+          "description": "Paste the buyer's requirements or scoring criteria, up to a page. Leave it empty if the buyer hasn't stated any yet",
+          "example": "1. SSO with our identity provider (mandatory). 2. Audit log export to our security tools (weight 20%). 3. Go-live in 30 days."
+        },
+        {
+          "name": "EVALUATION",
+          "required": false,
+          "description": "What kind of evaluation it is, the timeline, and who decides",
+          "example": "four-week POC, starting 1 December, IT director decides"
+        }
+      ],
+      "examples": [
+        "We're going into a POC against Northwind at Globex next month. What should we prove?",
+        "Globex sent their RFP. Help us shape the response against Initech.",
+        "Draft our answers to this security questionnaire from our approved docs.",
+        "Here's the buyer's scoring matrix. Which criteria will decide it?",
+        "Globex just said 'let's do a POV'. Nothing else yet. How do we set it up?",
+        "Should we even bid on this RFP? The requirements read like Northwind wrote them."
+      ],
+      "playbook": "Plan our evaluation against {COMPETITOR}. Evaluation: {EVALUATION}. The buyer's requirements:\n\n{REQUIREMENTS}\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in to my account. Call search_profiles for a company named here before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: say so once, ask which product is mine, and use public profiles only. This prompt carries only what I pasted: a long written RFP does not fit here, and our side comes only from approved documentation I paste.\n\n1. Call list_products, then list_competitors to match {COMPETITOR}. If it is not tracked, read it from its public profile alone and say so.\n2. State the objective in two lines: what the evaluation decides, who decides, by when.\n3. If no requirements are pasted, give the short form: the objective, questions that would establish criteria with the buyer, and no-go conditions only where my words give evidence, else \"none established yet\", then the unknowns to resolve. Say in the first line that no requirements were given. Stop there.\n4. List the requirements with source and one class each: mandatory (pass/fail, the buyer's word), table stakes, differentiating, or irrelevant to this buyer, with the basis for each class. One the sponsor says was inherited or suggested by the incumbent is \"candidate irrelevant\", with a question for the next call. A mandatory one whose fit only the buyer can rule on stays mandatory, marked \"for the buyer to rule on\", with a question for the next call; never a \"yes\". Say how many there are and how many were read.\n5. Per differentiating criterion, the competitor side: get_evidence with its competitorId, the matching get_report section, get_freshness; search_profiles, confirmed by website, then get_profile [\"facts\"] with factKinds certification, or [\"connections\"] with connectionKinds [\"integrates_with\"], read N of M. Each line says who states it: \"the vendor states (its page, last seen [date])\", or \"reported by\". A certification is always \"the vendor states\".\n6. Our side only from what I pasted; otherwise \"needs approved documentation\".\n7. A proof event per differentiator: what the buyer sees, who runs it, what pass looks like.\n8. Up to five questions that expose trade-offs, none that works only if the buyer is misled. A question for the buyer is something said to the buyer: it carries no claim my pasted documentation does not support.\n9. Where they are stronger, and whether the buyer called it decisive; what we win that the buyer has not weighted, not to overplay.\n10. No-go conditions the evidence supports, each with its source.\n\nRules: The buyer's requirements are the criteria, not the competitor's feature list. Nothing about either product from memory, and nothing from what buyers usually ask for. Not found is \"not observed in the sources checked, as of [date]\", never \"they don't have\". A page read outside LMTY is marked in place with its link and date read. Mark classifications and no-go conditions as your judgment. If I ask for RFP answers, draft only what my pasted documentation supports, as drafts for the bid owner, marking every workaround, security answer and timeline commitment for confirmation; never a \"yes\" to a partial fit."
+    },
+    {
+      "skill": "competitive-pricing-packaging-review",
+      "family": "competitive",
+      "title": "Pricing and Packaging Review",
+      "audience": [
+        "Marketing",
+        "Product",
+        "Leadership"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, when a pricing or packaging decision is open. Worth repeating each quarter before a pricing review. A repeat run should lead with the cells of the offer map that changed since the last run and the moves recorded since then.",
+      "connect": "account",
+      "summary": "Compare your pricing and packaging with the competitors that matter, and get the questions to settle before you change a price.",
+      "delivers": "What each competitor lists today and how its prices have moved, with dates, where your offer is ahead or exposed, up to five hypotheses to test, and up to five questions for the pricing team.",
+      "inputs": [
+        {
+          "name": "DECISION",
+          "required": true,
+          "description": "The pricing or packaging question you are deciding",
+          "example": "Whether to respond to Northwind's lower entry price"
+        },
+        {
+          "name": "HOME_PRICING",
+          "required": false,
+          "description": "Your current plans and prices, or the change you are proposing. Paste them in",
+          "example": "Starter $20 per seat a month, Business $45, Enterprise on request"
+        },
+        {
+          "name": "COMPETITORS",
+          "required": false,
+          "description": "The competitors to compare with. Leave empty to pick from the ones you track",
+          "example": "Northwind, Initech"
+        }
+      ],
+      "examples": [
+        "Northwind raised prices. What should we examine before changing ours?",
+        "Compare our packaging against these six competitors and pressure-test our new plan structure.",
+        "Are we charging separately for something the market treats as table stakes?",
+        "Build a pricing and packaging review for the exec team.",
+        "What changed in competitor pricing over the last quarter and what questions should it raise for us?",
+        "Should we match Initech's lower entry price?"
+      ],
+      "playbook": "Review our pricing and packaging for this decision: {DECISION}. Our pricing: {HOME_PRICING}. Compare with: {COMPETITORS}.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in. Call search_profiles for a company named here before list_products. If list_products asks for sign-in or returns no product, that is not a lost connection: read the competitors I named from their public profiles, say there is no tracked set or change history, and take our offer from what I pasted.\n\n1. Say what kind of decision this is: a scan, a reaction to a competitor move, a new price point, a packaging redesign, a free-to-paid boundary, an entitlement, a segment offer or launch pricing.\n2. Call list_products and list_competitors. Use the ones I named, or pick at most 6 that matter; say how many of the tracked set that is and who was left out.\n3. For each, call search_profiles for the product (prices sit on the product, not the company; confirm by website), then get_profile for the overview: the `pricing_plan` facts are the plans on sale, with the date last seen. Write prices as listed; do not convert units.\n4. Call get_profile with sections [\"pricing\"] and page with offset until `more` is empty: the history is under `pricingHistory`, as `changes` and `ended`. A change's `date` has no basis: read its event by `eventId` (get_market_event) to learn whose date it is (the move's own, \"reported on\", or \"seen on\"); otherwise write \"dated [date] in LMTY's price history\". Say where each record begins. A plan first seen on a date was not introduced on it. Write \"no change observed between\" two dates, never \"has not changed\".\n5. Call get_report with `section` \"pricing_packaging\", and get_report_changes with since at the start of the period I care about and limit 50, then the next page while nextCursor is not null, saying how far back you read. A change's date is when LMTY recorded it: write \"recorded on\".\n6. Build the offer map. A capability the pricing page does not mention is \"not listed on the pricing page as of\" the date; a plan with no public price is \"contact sales: no public price\"; no pricing on record is \"not observed\", never \"none\", \"free\" or \"custom\". What people report paying (`reported_price`) goes in a note, never in a price cell.\n7. Mark where our offer is a price advantage, value advantage, clearer packaging, exposed (and against whom), intentionally premium, or a false comparison, with the evidence for each.\n8. At most 5 hypotheses, each with the internal evidence that would confirm or reject it, and at most 5 decision questions.\n9. Say what was not read.\n\nWrite: Freshness line | Offer map (table) | Moves (table) | Our offer | Hypotheses | Decision questions | Limitations.\n\nRules: No price, plan or limit from memory, however well known the vendor: each comes from a tool result, from what I pasted, or from a page you read now, marked as your own reading with its link and the date read, and never in place of a price LMTY holds. A list price is what a page said on a date, not what anyone paid. No motive for a competitor's price move. Without our margins and deal data, do not answer yes or no: \"do not match\" and \"hold\" are recommendations too. Open with what the evidence shows and the question it leaves, and what would settle it. Hypotheses and diagnoses are your judgment: give the evidence each rests on."
+    },
+    {
+      "skill": "competitive-roadmap-review",
+      "family": "competitive",
+      "title": "Roadmap Review",
+      "audience": [
+        "Product",
+        "Marketing"
+      ],
+      "cadence": "Quarterly",
+      "when": "Quarterly, before planning, for a product area being watched; on demand when a roadmap question is open. A repeat run should lead with competitor movement in the area since the last run and any question whose class changed.",
+      "connect": "account",
+      "summary": "Turn what competitors did in one product area, and what your customers say, into questions product can investigate, with what is still unknown.",
+      "delivers": "What competitors did in the area, with dates, your customer evidence beside it, and up to seven questions, each marked as expected, a chance to stand out, noise, or not yet known.",
+      "inputs": [
+        {
+          "name": "PRODUCT_AREA",
+          "required": true,
+          "description": "The part of your product to review",
+          "example": "reporting and dashboards"
+        },
+        {
+          "name": "CUSTOMER_EVIDENCE",
+          "required": false,
+          "description": "What your customers have said or done about this area. Paste feature requests, interview notes or usage figures, with how many you looked through",
+          "example": "Reporting came up in 6 of 40 support tickets in October; 3 of 12 lost deals named it"
+        }
+      ],
+      "examples": [
+        "What should product investigate in reporting, based on the market?",
+        "Northwind and Initech keep adding AI assistants. Does that matter for our roadmap?",
+        "Review our Q3 roadmap against market and customer evidence.",
+        "Are we missing something important in admin and permissions?",
+        "Competitors all launched audit logs this year. Is that table stakes for us?"
+      ],
+      "playbook": "Review {PRODUCT_AREA} against what competitors did and what our customers say. Our customer evidence: {CUSTOMER_EVIDENCE}.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in. Call search_profiles for any competitor I name first. If list_products asks for sign-in or returns no product, that is not a lost connection: read their public profiles, say there is no tracked set, and ask which product is ours. LMTY holds the market side only: our customers' side is what I pasted. Without it, every question is an evidence gap.\n\n1. Restate the area as the customer need it serves, not as a competitor feature.\n2. Call list_products and list_competitors. Say how many of the tracked set you read.\n3. Call get_report with the `section` that covers the area (products_capabilities, positioning_differentiators, pricing_packaging, gtm_motion, partnerships_ecosystem, customers_solutions or compliance_trust), then get_report_changes with since about a quarter back and limit 50, then the next page while nextCursor is not null; say whether the history reaches that far and how many were read. A change's date is when LMTY recorded it: write \"recorded on\".\n4. For each tracked competitor: get_market_feed with its competitorId, family \"event\" and since a quarter back (on a repeat run, `recordedSince` the last run's date), judging each event by its content: search matches words literally and misses a release named otherwise, so use it only to narrow. For each that moved, call search_profiles (confirm by website) and get_profile sections [\"timeline\", \"pricing\", \"hiring\"]. Say shipped, announced or only marketed, the plan it landed in, and each date by its `atBasis`: occurred is the event's date, published is \"reported on\", observed is \"seen on\".\n5. Say whether order of movement can be established. On recorded or first-seen dates write \"order not established\" and do not say who followed whom.\n6. Set my customer evidence beside it, counted, with how many were searched and what that sample cannot speak to.\n7. At most 7 questions, each a customer problem, never \"build X\". Mark each: table-stakes risk (needs evidence that its absence costs deals or renewals), differentiator opportunity, copycat noise (competitors moving, no buyer evidence), or evidence gap. If our product meets the need differently and my evidence supports that, say so; it is not a gap.\n8. For each, the evidence missing before anyone could prioritize it. Do not rank the questions.\n9. Say what was not read.\n\nIf you have run this before for {PRODUCT_AREA}, lead with competitor movement since then and any question whose mark changed. An earlier run is one in this conversation or your client's memory: do not search files. With none, this run is the baseline.\n\nWrite: Read line | Market signals (table) | Our customer evidence | Questions (table: question, mark, evidence, evidence missing) | Not read.\n\nRules: Nothing about a competitor from memory: each move comes from a tool result, from what I pasted, or from a page you read now, marked as your own reading with its link and the date read. How hard a vendor sells something (its pricing page, a tier gate, its own customer stories) is its own claim, not buyer evidence. A review or post is one person's account: count reviews, never buyers, and label a review \"third-party opinion: review on [site], [date], one reviewer's account\". Never infer our customers' demand from competitors. \"Competitors have not solved it\" needs a source; otherwise \"not observed in the sources read\". No motive for any competitor. Every mark is your judgment: give its evidence."
+    },
+    {
+      "skill": "social-competitor-change-impact",
+      "family": "social",
+      "title": "Competitor Change Impact",
+      "audience": [
+        "Marketing",
+        "Sales",
+        "Product"
+      ],
+      "cadence": "On demand",
+      "when": "On demand, when a change lands. Daily for the two weeks after a change that matters. A repeat run should lead with posts since the last run, and say when it found no new posts.",
+      "connect": "social",
+      "summary": "See how a competitor's change is landing in public: who's reporting problems, who says they're switching, and who's unaffected.",
+      "delivers": "The change and its date, post counts before and after where collection allows, quoted posts sorted into experience, intent, questions, and opinion, and what it could cause beside what posts report.",
+      "inputs": [
+        {
+          "name": "COMPETITOR",
+          "required": true,
+          "description": "A competitor you track in LMTY",
+          "example": "Northwind"
+        },
+        {
+          "name": "CHANGE",
+          "required": true,
+          "description": "The change to trace",
+          "example": "closing the cheapest plan to new customers"
+        }
+      ],
+      "examples": [
+        "Northwind closed its cheapest plan last week. How are their customers reacting?",
+        "Is anyone looking to switch away from Northwind after the price increase?",
+        "Initech just got acquired. What are its users saying?",
+        "Who is complaining about Northwind's new usage limits?",
+        "Northwind's redesign shipped Monday. Is this an opening for us?"
+      ],
+      "playbook": "Show me how this change at {COMPETITOR} is landing in public: {CHANGE}.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in with Social Listening on. If a tool asks for sign-in or says it is off, tell me once and stop.\n\n1. Call list_products and list_competitors: if {COMPETITOR} is not tracked, say its posts were not collected; stop.\n2. Date the change: get_market_feed with the competitorId and family \"event\", then get_market_event for its sources. A published date can be a commentator's: if search_profiles finds {COMPETITOR}, check get_profile sections [\"pricing\", \"changes\"] for an earlier one. Use the earliest date a source supports (the first stage if staged); give its source and `atBasis`, and say so if my date differs. Only observed, or only commentators as sources: no before and after, just posts since then. Not in the feed: use my description, date unconfirmed.\n3. Count After: get_mention_stats with the competitorId, from 00:00 UTC on the change's day to now, max 30 days. If the answer's `competitorId` is null it counted my whole product: say so, no period counts. Collection began on the latest `since` in `platformsSince` among platforms with a tenth or more of `byPlatform`. No period begins before that or over 90 days back: move After's start there and say so. Before is as long and ends where After begins: if too early, shorten both; if none is left, leave it empty and call nothing a rise or a fall.\n4. Show both periods: `totalRelevantMentions`, `distinctAuthors`, `bySentiment`, `byTag`, and a per-day average over whole UTC days of `byDay`, never `windowDays`; a part day is a count with its hours. If a platform with a tenth or more of After has none before, name it, give counts only, call nothing a rise. No percentage if either is under 20; no cause. These are keyword matches, not posts about {COMPETITOR}, and a floor.\n5. Read list_mentions with the competitorId over After before shortening: at most 5 pages per filter, never splitting the period. Untagged first: 2 pages if over 5 pages. If `nextCursor` is not null, add the `byTag` tags with most posts that bear on the change. One untagged Before page for topics if Before is comparable. For each, say the hours or days covered and \"read N of M\": N mentions received, M that filter's count. Keep only posts whose `matchedKeywords` name {COMPETITOR}.\n6. Keep posts whose excerpt names the change. Keep as \"inferred from timing and content\", counted apart, only those describing its direct effect without naming it. Same topic, another reason or none: \"same topic, change not named\", not reaction; give both counts. Drop tags first_party, directory, promotional_post and ai_generated.\n7. Group each kept post once: Reported experience (first-hand, good or bad) | Stated intent (leaving, evaluating, seeking an alternative) | Question | Opinion or prediction | Unaffected or in favor. Quote up to 5 a group, max 200 characters, with platform, date, link and `author`. Write intent as \"says they cancelled\", never as the act.\n8. Table: what a change like this could cause | what posts report, with counts or empty. Say if one thread holds over half.\n\nRules: a post is one person's account, an author a handle: count posts and authors, never customers. No motive for the competitor, no churn forecast. Nothing found is \"not observed in what LMTY collects\", never \"no reaction\". Web search only for the change on {COMPETITOR}'s own pages; never count web posts. Contact nobody: a reply I ask for is a draft. With few or no posts, give only the counts, days read and what was not observed."
+    },
+    {
+      "skill": "social-keyword-check",
+      "family": "social",
+      "title": "Keyword Check",
+      "audience": [
+        "Marketing",
+        "Product"
+      ],
+      "cadence": "Monthly",
+      "when": "Monthly, and whenever you add a competitor. A repeat run should start with what changed in your keyword list since the last run.",
+      "connect": "social",
+      "summary": "Check whether the keywords LMTY tracks for you still catch the right posts, and which ones catch too little or the wrong posts.",
+      "delivers": "It lists names and handles your keywords don't cover yet, keywords that match few posts or the wrong ones, and keywords to clean up, like paused ones or ones for competitors you no longer track. It also flags tracked competitors with no keywords, shows what changed in your list, and suggests up to 7 changes to make in LMTY.",
+      "inputs": [],
+      "examples": [
+        "Are we still tracking the right keywords?",
+        "Review our social listening setup. What are we missing?",
+        "Northwind renamed its product in the spring. Are we still catching mentions of it?",
+        "Why do we get so few mentions of Initech?",
+        "Our keyword 'pilot' seems to pull in a lot of junk. Is it worth keeping?",
+        "We just added a competitor. Do its keywords cover everything it sells?"
+      ],
+      "playbook": "Check whether the phrases LMTY monitors for my product still cover the right things.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), signed in with Social Listening on. If a tool asks for sign-in or says it is off, tell me once and offer this instead: I paste my phrases and competitors, and you find the gaps against public profiles. At most 35 calls. Read-only: you list changes and make none.\n\n1. Call list_products (ask which if several), then list_competitors.\n2. Call list_tracked_keywords. Count the phrases by `kind`, those with `status` paused, and the `removed` list.\n3. Call get_mention_stats twice, for 90 and 30 days: keep `byKeyword` and `listeningSince`. If listening began under 90 days ago, say how many days the 90-day count covers.\n4. For my product, then competitors in list_competitors order (those an earlier run did not reach first), while calls last: search_profiles; get_profile on the profile with exactly that name, sections [\"overview\", \"facts\"], factKinds [\"former_name\"], for its `website`, its `channels` with `role` product or company, and former names; then sections [\"connections\"], connectionKinds [\"offers\", \"acquired\"]. A company's `offers` ties are its products. A product's `offers` tie pointing in names its maker: if graded above chatter, read the maker's connections the same way. Otherwise say \"no maker on record\" or give the chatter tie as such, and never take a maker or product name from `related`, the search or a shared name. Say which subjects you read of how many: the rest, any with no profile, and my product if no profile has exactly its name, are \"not checked\".\n5. Gaps, at most 12: a thing on the record that no active or paused phrase equals or is contained in. Give its grade and date (\"seen since\" unless a start is stated; never \"new\"; \"not given\" for a website or channel) and the phrase to add, spelled as the record spells it. Never propose a name from memory.\n6. Quiet phrases, at most 10: `byKeyword` for 30 and 90 days beside the days since `addedAt`, or since listening began if later. Under 14 days: \"too new to judge\". None: \"no posts matched in N days of monitoring\", never \"dead\".\n7. For up to 3 phrases that look like common words: one list_mentions page each with includeLowRelevance true, and the competitorId if it is a competitor's. Keep posts whose `matchedKeywords` include the phrase and say how many are about its subject, as numbers, from their openings. A phrase you did not read is never called noisy.\n8. Loose ends: `kind` competitor with `competitorId` null (the rival is not tracked now); a tracked competitor with no phrase; paused phrases. Give a pause no date.\n9. What changed: phrases by `addedAt` and `removed` by `removedAt`, since my last run, or in the last 30 and 90 days, one row per batch of one day. A count that differs across such a date is a change in collection, not in conversation.\n10. What to change in LMTY: at most 7 options, most useful first, each with the row it comes from and the wrong matches to expect, judged from the phrase: a domain has matched longer domains ending in it, and a short phrase has matched inside other text.\n\nIf you have run this before, lead with what changed in the list since then. An earlier run is one you can see in this conversation or in memory your client provides: do not search files or folders for one. With none, this run is the baseline.\n\nRules: A count is relevant posts that matched a phrase, not posts about its subject. A gap is \"on LMTY's record, not among the tracked phrases\". Give no reason why a phrase was added, removed or paused."
+    },
+    {
+      "skill": "social-listening-brief",
+      "family": "social",
+      "title": "Social Listening Brief",
+      "audience": [
+        "Marketing",
+        "Product",
+        "Leadership"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly, on a schedule if you prefer. A repeat run should start with what changed since the last brief, and say so when there's no earlier one to compare with.",
+      "connect": "social-optional",
+      "summary": "Brief your team on what people posted this week about your product, your competitors, and your category, plus what needs attention.",
+      "delivers": "How many posts and authors there were for your product and each competitor, up to 5 themes with linked excerpts, any dated events that fell on the same days, the questions people ask, and up to 5 things that need attention.",
+      "inputs": [
+        {
+          "name": "PRODUCT",
+          "required": true,
+          "description": "Your own product",
+          "example": "Acme"
+        },
+        {
+          "name": "COMPETITORS",
+          "required": false,
+          "description": "If you're not signed in, up to two competitors to read",
+          "example": "Northwind, Initech"
+        }
+      ],
+      "examples": [
+        "What are people saying about us this week?",
+        "Give me the weekly social listening brief.",
+        "What complaints are people posting about us and Northwind?",
+        "Any questions about Acme coming up on social that we haven't answered?",
+        "Post a social pulse to the marketing channel every Monday.",
+        "How much are people talking about Acme and Northwind? I don't have an account.",
+        "What needs my attention in this week's mentions?"
+      ],
+      "playbook": "Brief me on what people posted in public about {PRODUCT}, my product, its competitors and our category in the last 7 days.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`). Call search_profiles for {PRODUCT} first, then list_products. If it returns {PRODUCT} and Social Listening is on, do A, in at most 18 calls. Otherwise do B, in at most 8, without asking me to sign in.\n\nA. Signed in:\n\n1. Call list_competitors and list_tracked_keywords. If no phrase has `kind` own_brand, say so before any number: LMTY monitors no phrase for {PRODUCT} itself, so the brief covers competitors. Before any count, name each phrase whose `addedAt` or `removedAt` falls in the period.\n2. Call get_mention_stats since 00:00 UTC seven days ago, never before `listeningSince`. Then for up to 5 competitors by competitorId, those with most posts in `byKeyword`.\n3. Volume, one row each: `totalRelevantMentions`, `distinctAuthors`, the largest of `byPlatform`, the busiest whole day of `byDay`. Never \"spike\", \"drop\" or \"quiet\": for a whole day under a quarter of the median, say a gap in collection cannot be told from a quiet day.\n4. Call list_mentions for the largest tags in `byTag` among churn_intent, buy_intent, product_question, bug_report and negative user_feedback: a page each, then second pages. For each say \"read N of M\" and the days covered. Say which subject each post matched, from `matchedKeywords` and the phrase list. Drop posts about something else, the subjects' own, promotion and AI-written ones.\n5. Themes, at most 5: each a count over all matching posts, with two linked excerpts and the author groups (company, vendor, partner, independent, unknown). Say what the posts say only from 20 or more read by 10 or more authors, as numbers with the days or hours they cover; otherwise list them and write \"floor not met\".\n6. Call get_market_feed once, family \"event\", kinds price_changed, product_launched, product_deprecated, security_incident, funding_announced, acquisition_announced, partnership_announced, legal_action, company_shutdown, company_renamed. Say \"N events read of a feed not counted, from [time] back to [time]\"; show at most 5. Set a day's count beside one only if its `atBasis` is occurred. Otherwise \"reported on\" (published) or \"first seen on\" (observed); if none is occurred, say so.\n7. Needs attention, at most 5: what, why, where next. Questions people ask, above the same floor or when I ask for them: \"answered on the record\" with the fact, grade and date from get_profile for the product asked about, \"not on the record\", or \"not looked up\".\n\nB. Not signed in: for {PRODUCT} and up to 2 of {COMPETITORS}, call search_profiles, then get_profile with sections [\"chatter\"], then [\"timeline\"] in its own call, {PRODUCT} first. One row each from `chatterCounts`: if null, \"LMTY collects no posts for it\" (not \"0 posts\"); if `posts` is 0, \"none collected in the last 30 days\" Quote at most 10 posts, by author group: the most engaged of 30 days, not a sample. No themes below the floor. Events: at most 3 each, worded as in step 6; \"not read\" if not asked for. Say once what an account would add.\n\nIf you have run this before, lead with what differs. An earlier run is one in this conversation or your client's memory: never search files. With none, this is the baseline. Call volume a rise or a fall only if both periods began after listening did, with the same platforms and phrases, over whole days.\n\nRules: Counts are posts that matched a phrase and their authors, never customers or users. Nothing from memory or the web. End with what was not read, with both numbers."
+    },
+    {
+      "skill": "social-quote-finder",
+      "family": "social",
+      "title": "Quote Finder",
+      "audience": [
+        "Marketing",
+        "Sales"
+      ],
+      "cadence": "Weekly",
+      "when": "Weekly, or monthly for a product with few posts. A repeat run should list only posts dated since the last run.",
+      "connect": "social-optional",
+      "summary": "Find public posts that praise your product, and what to check before you follow up.",
+      "delivers": "Up to 10 posts quoted word for word, most specific praise first. Each comes with the author, the link, and what still needs checking: their employer, whether they're a customer, and permission to reuse. It also lists what it set aside and why.",
+      "inputs": [
+        {
+          "name": "PRODUCT",
+          "required": true,
+          "description": "Your own product",
+          "example": "Acme"
+        }
+      ],
+      "examples": [
+        "Who is saying nice things about Acme this month?",
+        "Find me some posts we could use as testimonials.",
+        "Any happy users worth reaching out to for a case study?",
+        "Someone posted that Acme cut their reporting time in half. Is that worth quoting?",
+        "Pull the best praise of Acme from the last two weeks.",
+        "What do people like about Acme? I'm not signed in.",
+        "Can you confirm the person who posted this is a customer?"
+      ],
+      "playbook": "Find public posts that praise {PRODUCT}, my own product, and might be worth quoting.\n\nUse the LMTY MCP tools (`https://mcp.lmty.com/mcp`), at most 12 calls. Call search_profiles for {PRODUCT} first, then list_products. If it returns {PRODUCT} and Social Listening is on, do A. Otherwise (sign-in asked for, no product, or Social Listening off) do B without asking me to sign in, and say once that an account with Social Listening on adds every collected post, with sentiment and tags.\n\nA. Signed in: call list_tracked_keywords. With no phrase of `kind` own_brand, say LMTY monitors no phrase for {PRODUCT} itself, so praise of it is not collected through this account (and when its own were removed, from `removed`), and do B. Else call get_mention_stats for 30 days with ownOnly true: M is `bySentiment.positive`. Get {PRODUCT}'s `channels` as in B. Call list_mentions with ownOnly true, sentiment positive and limit 50, up to 7 pages. Say \"read N of M positive posts that matched my own phrases\". If I point at posts instead (a link, an author, a day): read those days with list_mentions, ownOnly only if I have own phrases, and judge only them by steps 1 to 3, with no wider count.\n\nB. Not signed in: call search_profiles for \"{PRODUCT}\" and take the product's profile (ask if several match). Call get_profile for its overview and its company's: keep `channels`. Call get_profile with sections [\"chatter\"] for the product, paging until `more` is empty, and for the company only if its overview counts posts. Say \"read N of M\", M from `chatterCounts.posts`: the most engaged posts of 30 days, not a sample; praise is judged by reading. If `chatterCounts` is null, say LMTY collects no public posts for {PRODUCT}, which is not nobody praising it, and stop. If `posts` is 0, say LMTY collected none in the last 30 days, and stop.\n\nThen, either way:\n\n1. Keep a post only if its excerpt itself praises {PRODUCT}: not praise of someone else that only names it, a kind word inside a complaint, or praise that may come after the cut.\n2. Sort each author: the company (a handle in `channels` under any role but community, or one who says they work there), a partner or vendor, an independent poster, or unknown affiliation. Only the last two are candidates. Other employees cannot be identified: say so once. No handle: \"no handle given\", unknown affiliation.\n3. Candidates, at most 10, most specific praise first, never by followers. For each: the excerpt exactly as returned, with \"may continue\" if cut (A: exactly 400 characters; B: ends in an ellipsis after a word; a link ending in one is not a cut); handle and display name; platform; date; link; engagement; author group; why it is worth a look; and \"not verified: employer, whether a customer, permission to reuse\".\n4. Set aside, as counts, one example each: the company's own posts; partners and vendors; promotional and AI-written posts (by their tags in A, by reading in B); praise mainly of someone else; not praise when read.\n5. End with: these are leads, and before reuse a person asks the author and waits for a yes in writing.\n\nIf you have run this before for {PRODUCT}, list only posts dated after that run. An earlier run is one in this conversation or your client's memory: do not search files.\n\nRules: Never complete, tidy, translate or join an excerpt, and add no quote from memory or the web. Nobody is a customer or a user unless the post says so. A display name that includes a company is not an employer. Never look an author up. With none, write \"no candidates in the N posts read\" and which reason removed the most."
+    }
+  ]
+}

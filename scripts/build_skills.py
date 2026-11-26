@@ -2,12 +2,18 @@
 """Generate everything in this repository that is derived from a source.
 
     shared-references/*.md  -> skills/<name>/references/{TRUST,CONTEXT,...}.md
+    shared-references/social.md -> skills/<name>/references/SOCIAL.md, only
+                                   where SKILL.md lists that file
+    playbooks/*.md          -> library.json
     plugin.json             -> .claude-plugin/plugin.json, .claude-plugin/marketplace.json
     plugin.json             -> .agents/plugins/marketplace.json, gemini-extension.json
     MCP_SERVER              -> mcp.json, .mcp.json
+    plugin.json, MCP_SERVER -> server.json
 
 Skills get copies so a published skill directory never reaches outside
-its own root. Manifests get copies because each client reads a different
+its own root. Every skill gets the references in FILES. One in
+OPTIONAL_FILES goes only to a skill whose SKILL.md lists the copy, and a
+copy left in a skill that no longer lists it is removed. Manifests get copies because each client reads a different
 path and wants slightly different fields; symlinks do not survive a
 Windows checkout or an archive install.
 
@@ -36,11 +42,22 @@ FILES = {
     "internal-context.md": "INTERNAL.md",
 }
 
+# Vendored only into a skill whose SKILL.md lists the copy, in backticks,
+# as `references/<name>`. The rules for reading public posts are long,
+# and most skills never read a post.
+OPTIONAL_FILES = {
+    "social.md": "SOCIAL.md",
+}
+
 # Every client installs `lmty@lmty-plugins`: plugin named for the
 # product, marketplace for the catalog.
 MARKETPLACE = "lmty-plugins"
 MARKETPLACE_DISPLAY = "LMTY"
 MARKETPLACE_DESCRIPTION = "Plugins by LMTY."
+# The pack's name where a client lists it as a plugin. ChatGPT and Codex
+# show the com.openai interface's displayName instead, which matches the
+# ChatGPT store listing.
+PACK_DISPLAY = "LMTY Skills"
 
 # Claude Code's category is free-form; Codex's is the curated value in
 # the com.openai extension.
@@ -58,6 +75,25 @@ CLAUDE_MARKET_SCHEMA = "https://json.schemastore.org/claude-code-marketplace.jso
 MCP_SERVER = "lmty"
 MCP_URL = "https://mcp.lmty.com/mcp"
 MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+
+# The server's entry in the official MCP Registry
+# (registry.modelcontextprotocol.io), published from server.json with
+# `mcp-publisher`. The namespace is lmty.com in reverse-DNS form, proven
+# by the `v=MCPv1` TXT record on the domain's apex, and the name after
+# the slash is the one the server reports in its MCP handshake. The
+# title matches the handshake too.
+REGISTRY_SCHEMA = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json"
+REGISTRY_NAME = f"com.lmty/{MCP_SERVER}"
+REGISTRY_TITLE = "LMTY"
+# The registry caps the description at 100 characters.
+REGISTRY_DESCRIPTION = (
+    "Read-only access to your tracked competitors, market history, observed changes and sourced evidence."
+)
+# Served by the LMTY site, so it comes from the server's own domain.
+REGISTRY_ICON = {"src": "https://lmty.com/apple-icon.png", "mimeType": "image/png", "sizes": ["180x180"]}
+# GitHub's numeric id for this repository, which survives a rename:
+# `gh api repos/LMTYdotcom/skills --jq .id`.
+REPOSITORY_ID = "1393471039"
 
 
 def dump(obj: dict) -> str:
@@ -89,7 +125,8 @@ def codex_compat_manifest() -> str:
 
 def render_manifests() -> dict[str, str]:
     """Return {relative path: file content} for every generated manifest."""
-    base, portable, interface, display_name = _manifest()
+    base, portable, interface, _ = _manifest()
+    display_name = PACK_DISPLAY
 
     # `claude plugin validate --strict` fails on `$schema` and
     # `extensions` from Agent Plugins, so they are dropped.
@@ -148,6 +185,20 @@ def render_manifests() -> dict[str, str]:
         "mcpServers": {MCP_SERVER: {"httpUrl": MCP_URL}},
     }
 
+    # The registry lists the remote server, not the pack, so this carries
+    # the endpoint and the pack's version, homepage and repository.
+    registry = {
+        "$schema": REGISTRY_SCHEMA,
+        "name": REGISTRY_NAME,
+        "title": REGISTRY_TITLE,
+        "description": REGISTRY_DESCRIPTION,
+        "version": base["version"],
+        "websiteUrl": base["homepage"],
+        "repository": {"url": base["repository"], "source": "github", "id": REPOSITORY_ID},
+        "icons": [REGISTRY_ICON],
+        "remotes": [{"type": "streamable-http", "url": MCP_URL}],
+    }
+
     return {
         ".claude-plugin/plugin.json": dump(claude),
         ".claude-plugin/marketplace.json": dump(claude_market),
@@ -157,7 +208,14 @@ def render_manifests() -> dict[str, str]:
             {"$schema": MCP_SCHEMA, "mcpServers": {MCP_SERVER: {"type": "streamable-http", "url": MCP_URL}}}
         ),
         ".mcp.json": dump({"mcpServers": {MCP_SERVER: {"type": "http", "url": MCP_URL}}}),
+        "server.json": dump(registry),
     }
+
+
+def lists_reference(skill_dir: Path, dest_name: str) -> bool:
+    """Whether a skill's SKILL.md names `references/<dest_name>` in backticks."""
+    skill = skill_dir / "SKILL.md"
+    return skill.exists() and f"`references/{dest_name}`" in skill.read_text(encoding="utf-8")
 
 
 def main() -> None:
@@ -166,13 +224,30 @@ def main() -> None:
         ref_dir.mkdir(parents=True, exist_ok=True)
         for src_name, dest_name in FILES.items():
             shutil.copy2(SHARED_REFERENCES / src_name, ref_dir / dest_name)
-        print(f"vendored {len(FILES)} shared references -> {skill_dir.name}")
+        count = len(FILES)
+        for src_name, dest_name in OPTIONAL_FILES.items():
+            copy = ref_dir / dest_name
+            if lists_reference(skill_dir, dest_name):
+                shutil.copy2(SHARED_REFERENCES / src_name, copy)
+                count += 1
+            elif copy.exists():
+                copy.unlink()
+                print(f"removed references/{dest_name}, which SKILL.md no longer lists -> {skill_dir.name}")
+        print(f"vendored {count} shared references -> {skill_dir.name}")
 
     for rel, content in render_manifests().items():
         path = ROOT / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content.encode("utf-8"))
         print(f"generated {rel}")
+
+    # Imported here: playbooks.py needs PyYAML, which rendering the
+    # manifests alone does not.
+    from playbooks import render_library
+
+    version = json.loads(MANIFEST.read_text(encoding="utf-8"))["version"]
+    (ROOT / "library.json").write_bytes(render_library(version, MCP_URL).encode("utf-8"))
+    print("generated library.json")
 
 
 if __name__ == "__main__":

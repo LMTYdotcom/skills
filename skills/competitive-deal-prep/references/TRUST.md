@@ -46,9 +46,9 @@ When LMTY is available, inspect and preserve:
 - product as-of date
 - last successful refresh
 - coverage period
-- observed date for changes
+- the date a change was recorded, which is not the date it happened
 - capture or last-seen date for evidence
-- stale, frozen, lapsed, researching, or partial states
+- a paused refresh, a subject refreshed longer ago than the others, or a list read in part
 
 When LMTY is not available:
 - state the source collection date or the document dates
@@ -62,7 +62,6 @@ A source can be fresh and incomplete. Treat these separately.
 Recommended coverage labels:
 - complete enough for the requested decision
 - partial
-- researching
 - unknown
 
 When coverage is partial, say what is missing and how that limits the conclusion.
@@ -123,6 +122,8 @@ rather than:
 - "the company must"
 - "the correct move is"
 
+A negative directive is a directive: "do not match their price" decides for the user as much as "match it" does.
+
 This is a rule about the verb, not the tone. A confident, well-argued paragraph that ends in "we should move to usage-based pricing" is a directive, however many caveats surround it. If the internal economics, customer evidence and company goals are not in front of you, the honest output is the decision and the evidence needed to make it - not the decision made on your behalf.
 
 Rewrite a directive as the question it was hiding:
@@ -146,6 +147,31 @@ Lower it explicitly, and say why, whenever:
 
 Name the reason in the same sentence: "medium confidence - two of the three sources trace back to the same press release" is useful; "medium confidence" alone is not.
 
+## Verdicts on a claim
+
+When the job is to say how far one claim holds - a number a company cites, a line in a deck, something a buyer repeated - give it one of these verdicts, worded exactly. A verdict describes the claim's support. It never says the claim is true or false, because the record does not reach that far.
+
+| Verdict | Test |
+| --- | --- |
+| **Supported** | Stated by a source independent of whoever benefits from it that is in a position to know (a register, a filing, the other party's own statement), or by the subject and at least one independent source, and recent enough for the claim's tense |
+| **The subject's own claim** | Only the subject states it. Nothing against it, nothing independent for it |
+| **Reported, not confirmed by the subject** | Press states it, however many outlets, or two independent voices that are not in a position to know. The subject has not |
+| **Unverified** | One voice with no standing states it |
+| **Disputed** | Sources of comparable standing give different values for the same thing |
+| **Out of date** | Supported as of an earlier date; since ended, stopped being listed, or superseded |
+| **Not observed** | Nothing in the sources checked bears on it. That is not evidence against it |
+| **Untestable** | The claim has no checkable content: it names no measure, value or date |
+
+Who counts as independent depends on the claim. For a claim that one company uses another's product, the interested party is the vendor: for "Globex uses Northwind", Northwind's logo wall is the interested party and Globex's own job ad is independent. When the vendor is the only voice, "The subject's own claim" is worded "The vendor's own claim", because "the subject" could be read as the customer. For "Northwind raised $50M", an investor's announcement is a party too; a filing is not.
+
+Three rules go with the scale:
+
+- **Ask who the only voice is.** A statement by the party it flatters is that party's claim, however official the page it sits on. This is the commonest way a claim is over-read.
+- **Different is not disputed.** Two figures that count different things - customers a company claims, customers known by name - do not contradict each other. Say what each counts.
+- **Give the source and its date with the verdict**, and name the one thing that would settle it.
+
+A skill whose artifact marks claims in its own words keeps those marks: an audit's supported, stale, unsupported and contradicted, or an objection's verified and partly verified, are fitted to that artifact. What every such skill takes from this scale is the first rule. A claim whose only support is the party it flatters is marked as that party's own claim, whatever else the mark says.
+
 ## Never fill a gap with a plausible sentence
 
 The strongest pull in this work is toward completeness: a section with nothing in it looks like a failure, so it gets filled. Every invented objection, customer example, segment detail or win story in this pack's outputs arrived that way.
@@ -161,6 +187,19 @@ Never generalize one anecdote into a market truth. Label:
 
 A compelling call clip can be excellent evidence for an objection, but it is not automatically representative of the market.
 
+### Public reviews
+
+A public review of the home product or of a competitor, on a review site, is a source of customer vocabulary: the words buyers use, what they praise and complain about, and how they name the category. It is third-party opinion, and it is used only under these rules.
+
+- **Label it wherever it is used.** Name the site that published it, give the review's date, and say it is one reviewer's account: "third-party opinion: review on [site], [review date], one reviewer's account". A reviewer's role, company size or industry is given only as the review states it, never guessed from the wording.
+- **One review is one voice.** A review is never deal evidence and never a count of anything. It does not say why deals are won or lost: that stays with `competitive-win-loss-analysis` and its buyer evidence. It supports no frequency ("most customers say", "buyers often"). It is not a fact about the product: a reviewer who writes that a product has no export has told you what one person found, not what the product has. Say how many reviews were read, on which sites and between which dates. Count reviews, never customers or buyers.
+- **It ranks below the company's own customer evidence:** interviews, call transcripts, win/loss notes, support tickets, customer research. When both exist, the internal evidence leads and the reviews are set beside it, marked. When only reviews exist, a test of wording against how buyers talk runs on them, and the output says the customer side rests on public reviews alone. When neither exists, the test is not run, and the output says so and names what would run it.
+- **It is read in this conversation, never recalled.** LMTY's record holds no review text; "Listings and reviews" in `references/LMTY.md` says what it holds instead. A review is therefore web material: read on the review site's page in this run, and marked as from the open web with its link and the date read, the way `references/LMTY.md` sets out under "Outside LMTY's record". When the page cannot be read, there are no reviews: say so. What reviewers "tend to say" about a product is memory, and memory is not a source.
+- **A review a vendor quotes on its own site is the vendor's selection.** Label it as the vendor's: "quoted by Northwind on its customers page". It shows what the vendor chose to show, not what reviewers say.
+- **A site's rating, review count and category are the site's.** A rating is not a measure of customers, and the category a review site files a product under is the site's label, not a buyer's word for it.
+
+Nothing else changes with reviews in hand. Deal evidence, win and loss reasons and the verdict on a claim keep their own sources.
+
 ## Output requirement
 
 Every skill output that contains material reasoning should make it possible to answer:
@@ -169,3 +208,5 @@ Every skill output that contains material reasoning should make it possible to a
 - What is interpretation rather than observation?
 - What important evidence is missing?
 - What could we do next?
+
+End of TRUST.md.

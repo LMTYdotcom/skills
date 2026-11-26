@@ -6,9 +6,9 @@ Competitors' roadmaps are evidence about competitors. Customers' problems are ev
 
 The review's job is to make the market and customer evidence about a product area legible enough that product can investigate the right questions. Its most common honest output is "here are the questions, and here is what you would need to know before choosing among them."
 
-## Why this is the last skill built
+## Why this review overreaches easily
 
-Roadmap conversations are where a model can sound strategically intelligent while overreaching from thin evidence. "Three competitors added AI agents; we should too" is fluent, plausible, and unsupported by anything about the company's customers. Every discipline the rest of the pack enforces - internal versus external evidence, buyer truth, anecdotes not generalized, decisions routed to their owners, contradictory sources shown rather than resolved - is load-bearing here at once.
+Roadmap conversations are where a model can sound strategically intelligent while overreaching from thin evidence. "Three competitors added AI agents; we should too" is fluent, plausible, and unsupported by anything about the company's customers. Internal versus external evidence, buyer truth, anecdotes not generalized, decisions routed to their owners, contradictory sources shown rather than resolved: all of it is load-bearing here at once.
 
 ## From feature to need
 
@@ -22,7 +22,7 @@ Movement across competitors is independent when several moved on their own evide
 - one shipped and the others changed a headline
 - an analyst framework named it and everyone added the word
 
-The change record answers this, with dates. One vendor plus echoes is one vendor, however loud the echoes.
+The change record gives when LMTY recorded each move, which is the latest it can have happened. It shows who has moved; it shows who moved first only when the entries carry the events' own dates, as a competitor's dated release note or an event whose date is when it occurred does. A record that began last month shows every competitor moving inside the same weeks. One vendor plus echoes is one vendor, however loud the echoes.
 
 ## Buyer relevance
 
@@ -30,8 +30,9 @@ Competitors building something proves competitors believe buyers want it. Buyer 
 
 - buyers naming it as a criterion in win/loss or calls
 - prospects asking about it in evaluations
-- LMTY evidence of buyer-facing emphasis - pricing pages, tier gating, customer references citing it - rather than a blog post
-- review or analyst language from buyers
+- review or analyst language from buyers. A public review or post is one person's account: count reviews, never buyers. A review is labeled third-party opinion, as "Public reviews" in `references/TRUST.md` says
+
+How hard a vendor sells something - its pricing page, a tier gate, customer stories on its own site - is part of the competitor's move and the vendor's own claim. It is not buyer evidence.
 
 Without any of these, the finding is "competitors are moving; buyer relevance not established", and the classification is noise or evidence gap.
 
@@ -53,17 +54,17 @@ Before a gap is a gap, check the home product:
 - **solved differently by design** - a deliberate approach that is not the competitor's; the question is whether the approach still serves the need, not whether to copy
 - **absent**
 
-Only the last is a candidate gap. The third is where the most interesting differentiation questions live.
+Only the last is a candidate gap. The third is where the most interesting differentiation questions live. When customer evidence supports the different approach, that is a difference the evidence supports, not an evidence gap; the open question is whether buyers know.
 
 ## The four classes
 
 **Table-stakes risk.** Buyers increasingly expect it, competitors have it, and there is evidence - lost deals, failed renewals, evaluation criteria - that its absence costs. Without the cost evidence it is not table stakes; it is a competitor feature.
 
-**Differentiator opportunity.** Customers describe a problem that competitors have not solved well, or the home product's different approach leaves it distinct on something customers value. Requires customer evidence of the problem, not just the absence of a competitor solution.
+**Differentiator opportunity.** Customers describe a problem that competitors have not solved well, or the home product's different approach leaves it distinct on something customers value. Requires customer evidence of the problem, not just the absence of a competitor solution. Where no competitor solution was found, write "not observed in the sources read, as of [date]".
 
-**Noise / copycat risk.** Competitor movement without buyer evidence. Investing would be following. Named as such so that the pressure to follow has something to argue against.
+**Copycat noise.** Competitor movement without buyer evidence. Investing would be following. Named as such so that the pressure to follow has something to argue against.
 
-**Evidence gap.** The question is real; the evidence to classify it does not yet exist. This is an honest and common result, and the review says what evidence would close it.
+**Evidence gap.** The question is real; the evidence to classify it does not yet exist. This is an honest and common result, and the review says what evidence would close it. It is not the default when a competitor has moved.
 
 The class is stated with its evidence. A class asserted without evidence is a preference.
 

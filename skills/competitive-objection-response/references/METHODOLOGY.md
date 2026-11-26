@@ -1,4 +1,4 @@
-# Sales Objection Response Methodology
+# Competitive Objection Response Methodology
 
 ## Core principle
 
@@ -29,7 +29,7 @@ This distinction is load-bearing.
 
 Example:
 
-> "Competitor X has more integrations."
+> "Northwind has more integrations."
 
 Possible states:
 
@@ -38,6 +38,8 @@ Possible states:
 - based on a raw integration count that does not reflect workflow depth
 - stale
 - unverifiable from current evidence
+
+A count on LMTY's record is how many integrations LMTY has read so far, not how many the product has. Two such counts do not settle "more"; the named systems the buyer needs do.
 
 Even when the claim is false, the buyer's concern remains real.
 
@@ -108,6 +110,8 @@ It cannot decide:
 - what discount policy should be
 
 Those belong to `competitive-pricing-packaging-review` or internal commercial policy.
+
+The list price is the plan on sale now, with the date it was last seen. What a person says they pay is one person's account and never the list price. When the objection is about a change ("they just cut their price"), give the change its own date; where the record has only when LMTY first saw it, write "seen on" and do not confirm that it is recent. A change's `date` in the profile's price history (the `pricing` section, under `pricingHistory`) carries no basis: read the entry's event by its `eventId` to learn whose date it is. Until then write "dated [date] in LMTY's price history", never "changed on [date]", and do not check the buyer's "just" or "last month" against it.
 
 ## Feature objections
 

@@ -37,7 +37,7 @@ Ask:
 - Does it reduce meaningful friction?
 - Are customers adopting it without heavy persuasion?
 - Are multiple players converging independently?
-- Does the pattern persist across more than one launch cycle?
+- Does the pattern persist across more than one launch cycle? Answer this only from dates of the moves' own; a first-seen date says when a thing was found, not when it began.
 
 ## Scenario framing
 

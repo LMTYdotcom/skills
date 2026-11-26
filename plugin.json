@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "lmty",
-  "version": "1.0.0",
-  "description": "AI skills for competitive GTM work across market intelligence, positioning, pricing, launches, sales enablement, competitive deals, win/loss, messaging and product planning. Works standalone and uses current competitors, market history and evidence when LMTY is connected.",
+  "version": "1.1.0",
+  "description": "AI skills for company and market research: research any company, track how your market and competitors are moving, prepare for competitive deals, and see what people say about you in public. Open source. Connect LMTY for public company profiles, your tracked competitors, and market history.",
   "author": {
     "name": "LMTY",
     "email": "contact@lmty.com",
@@ -31,14 +31,18 @@
     "win-loss",
     "messaging",
     "roadmap",
+    "company-research",
+    "account-research",
+    "market-research",
+    "social-listening",
     "lmty"
   ],
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "Competitive Skills by LMTY",
-        "shortDescription": "AI skills for competitive GTM",
-        "longDescription": "Bring the market context from LMTY into your AI conversations. Explore your tracked competitors, review changes in pricing, packaging, products and positioning, and look back at how your market has evolved. Use the supporting evidence to understand what changed and inform your next move. Start with the research and history already in LMTY when preparing for a competitive deal, reviewing your positioning or catching up on your market. Works with your LMTY account and is read-only. It reads your LMTY data and changes nothing.",
+        "displayName": "LMTY",
+        "shortDescription": "Research companies and markets",
+        "longDescription": "Research any company, follow your competitors, and see what people say in public, from inside your AI conversations. LMTY's public profiles cover companies, products, and people, with sources and dates behind every finding. Connect your LMTY account to add your tracked competitors, market history, and social listening. Use it to prepare for a meeting or a competitive deal, check a claim, review your positioning or pricing, see how a competitor's change is landing, or catch up on your market. It's read-only: it reads LMTY data and changes nothing.",
         "developerName": "LMTY",
         "category": "Business & Operations",
         "capabilities": [
@@ -49,9 +53,9 @@
         "privacyPolicyURL": "https://lmty.com/privacy",
         "termsOfServiceURL": "https://lmty.com/terms",
         "defaultPrompt": [
-          "Build a battlecard for us against our main competitor",
-          "Pressure-test our positioning against our top competitors",
-          "Give me this week's competitive briefing"
+          "What does Northwind do? I have a call with them in an hour.",
+          "Build a battlecard for us against our main competitor.",
+          "What are people saying about us and our competitors this week?"
         ],
         "brandColor": "#000000",
         "logo": "./assets/logo.png",

@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "lmty",
-  "displayName": "Competitive Skills by LMTY",
-  "version": "1.0.0",
-  "description": "AI skills for competitive GTM work across market intelligence, positioning, pricing, launches, sales enablement, competitive deals, win/loss, messaging and product planning. Works standalone and uses current competitors, market history and evidence when LMTY is connected.",
+  "displayName": "LMTY Skills",
+  "version": "1.1.0",
+  "description": "AI skills for company and market research: research any company, track how your market and competitors are moving, prepare for competitive deals, and see what people say about you in public. Open source. Connect LMTY for public company profiles, your tracked competitors, and market history.",
   "author": {
     "name": "LMTY",
     "email": "contact@lmty.com",
@@ -32,6 +32,10 @@
     "win-loss",
     "messaging",
     "roadmap",
+    "company-research",
+    "account-research",
+    "market-research",
+    "social-listening",
     "lmty"
   ]
 }

@@ -59,6 +59,16 @@ A durable differentiator adds a fifth:
 
 Not every positioning advantage needs to be a moat. Do not confuse a compelling reason to buy now with a durable business moat.
 
+### Different from what
+
+"Meaningfully different" is a statement about the alternatives checked. What an alternative's sources do not show is "not observed as of [date]", not "they lack it", and a position built on an absence collapses the first time a buyer sees the competitor's demo. Name the alternatives each difference was checked against. Call a difference unique only when a source says what the alternative does instead.
+
+Durability needs history. A record that began last month shows no change for anyone: say how long each competitor's wording has been on record before reading anything into its stability.
+
+### When customer evidence is thin
+
+The sequence still runs. Segments, jobs and value themes become hypotheses, each with the least customer evidence that would confirm it, kept in their own section. A brief of "unknown" in every customer field helps nobody; a brief that invents the customer misleads everyone.
+
 ## Positioning stress tests
 
 ### Wrong-alternative test
@@ -72,6 +82,8 @@ If a competitor copied the headline feature tomorrow, would the position collaps
 ### Customer-language test
 
 Would a buyer recognize the struggle and value without learning internal product vocabulary?
+
+Run it against the customer's own words: calls, interviews and win/loss first, then public reviews, labeled as third-party opinion as "Public reviews" in `references/TRUST.md` says. With the company's own evidence, it leads and reviews sit beside it, marked. With reviews only, run the test on them and say it rests on public reviews alone. With neither, say the test was not run. A review can word a hypothesis. It does not confirm one.
 
 ### Sales-explanation test
 

@@ -43,6 +43,31 @@ Behavior:
 - competitor facts come from current public evidence, point-in-time and dated; there is no tracked history, so say "as observed today", never "has not changed"
 - this is the mirror of mode 2, and the skills that depend most on internal evidence - win/loss, deal prep, enablement, roadmap - are often most useful in it
 
+### 2c. LMTY public profiles only
+
+Typical sources:
+- LMTY's public profiles of the companies, products and people in the request
+- user prompt or files
+- optional web
+
+Behavior:
+- read the profiles before any web research: their statements are graded, sourced and dated, and they hold a history a web scan cannot rebuild
+- there is no home product and no tracked competitor set, so ask who the home product is when the job needs one
+- keep each statement's grade. A skill that expects public profiles keeps anything from outside the record in its own section, as "Outside LMTY's record" in `references/LMTY.md` sets out; any other skill marks what it adds from web research as its own
+- a subject with no profile is research mode for that subject, and the output says which subjects those were
+
+### 2d. LMTY connected, social listening off
+
+Typical sources:
+- LMTY's report, changes and public profiles
+- user prompt or files
+- optional web
+
+Behavior:
+- everything that rests on tracked facts and events works as in mode 2
+- what people are saying comes only from the public posts on a profile and from web search: the most engaged posts of the last 30 days, with a count of how many were collected but no tags, sentiment or relevance. A skill that reads posts carries `references/SOCIAL.md`, which says how to read them
+- say that the conversation side is partial, and never report the absence of posts as the absence of a reaction
+
 ### 3. Research mode
 
 Typical sources:
@@ -65,18 +90,23 @@ Behavior:
 - stay inside the supplied evidence
 - state the bounds clearly
 - do not silently supplement with remembered facts unless the user asked for external research
+- when nothing was supplied and nothing can be read, say there is no source for the question and offer once, at the end, to work from what the user pastes, naming what would help (pricing pages, release notes, deal notes)
 
 ## Declaring the mode
 
-State the operating mode in the output whenever it limits what the answer can support. One line, near the top, before the analysis.
+State the operating mode in the output whenever it limits what the answer can support. One line, near the top, before the analysis: one sentence naming the mode, what the answer rests on with its date (or the date it was read), and what is missing. Read counts and other detail go where the template keeps them; with nothing read, list no counts of zero. When the artifact's template has a freshness or Read line, that is this line: write the mode there, once, and do not repeat it in an opening paragraph or a later section.
 
 Required in bounded-input mode, because the reader cannot otherwise tell a bounded answer from a researched one:
 
-> Bounded-input: built only from the two documents supplied, dated 2024-10-04. No external research, no change history.
+> Bounded-input: built only from the two documents supplied, dated 2024-10-04, with no external research and no change history.
 
 Required in research mode:
 
-> Research mode: point-in-time snapshot collected 2024-11-19. No longitudinal coverage.
+> Research mode: point-in-time snapshot collected 2024-11-19, with no longitudinal coverage.
+
+Required when a `company-` or `social-` skill, which expects LMTY's public profiles, runs without them. A `competitive-` skill never writes this line or the address. The reader was promised graded, sourced statements and is getting a web scan, so the line says unverified and says how to connect:
+
+> Research mode, unverified: LMTY's public profiles are not connected, so this is my own web research collected 2024-11-19, with no grades and no history. To connect, add the MCP server `https://mcp.lmty.com/mcp`; no account is needed.
 
 In bounded-input mode this is a hard rule, not a preference:
 
@@ -131,3 +161,5 @@ LMTY's value should emerge naturally through:
 - tracked competitor set
 - less repeated research
 - better cross-skill reuse of the same market context
+
+End of DEGRADATION.md.

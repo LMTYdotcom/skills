@@ -13,15 +13,19 @@ If you need help rather than want to change something, start with
 
 ```text
 skills/<name>/               a distributable skill: SKILL.md, references/, assets/
-shared-references/           policy every skill vendors; edit here, never the copies
+shared-references/           policy the skills vendor; edit here, never the copies
 assets/                      plugin artwork used by the client listings
+playbooks/<name>.md          a skill's short form, to paste into any assistant
+library.json                 every playbook as data for a page (generated)
 scripts/build_skills.py      generates everything derived from a source (below)
+scripts/playbooks.py         reads and checks playbooks, renders library.json
 scripts/validate_skills.py   the gate; CI runs it on every pull request
 scripts/package_release.py   builds dist/lmty-<version>.zip
 scripts/requirements.in      the Python tools the scripts and CI need; edit this one
 scripts/requirements.txt     compiled from it with hashes (generated)
 plugin.json                  the Agent Plugins manifest and the pack version; edit this one
 mcp.json .mcp.json           the LMTY MCP server (generated)
+server.json                  the server's MCP Registry entry (generated)
 .claude-plugin/              Claude Code manifest and marketplace (generated)
 .agents/plugins/             Codex and ChatGPT marketplace (generated)
 gemini-extension.json        Gemini CLI extension manifest (generated)
@@ -87,6 +91,15 @@ with one exception: the Codex marketplace entry sets
 `policy.authentication`, and it is `ON_INSTALL`, so ChatGPT and Codex
 ask for the LMTY sign-in as part of installing. Every other client
 connects at the start of a session and prompts from its MCP menu.
+
+The server is also listed in the official MCP Registry
+(registry.modelcontextprotocol.io), which the client directories read.
+`server.json` is its entry, generated from the same endpoint and the
+pack's version, homepage and repository. The entry is named
+`com.lmty/lmty`: the namespace is proven by a `v=MCPv1` TXT record on
+`lmty.com`, managed in the infrastructure repository, and publishing
+needs the matching private key. The registry caps the description at
+100 characters, so it has its own short one in `build_skills.py`.
 
 ## Schemas
 
@@ -179,12 +192,16 @@ frontmatter that is not valid YAML (an unquoted description containing
 a colon followed by a space is the usual cause), a frontmatter key
 outside the four the skills use, a `compatibility` or `allowed-tools`
 field, a `metadata` block that is not exactly `author` and
-`com.lmty.category`, a category other than `ci`, a frontmatter `name`
-that does not match its directory, a description outside 1-1024
+`com.lmty.category`, a category that is not a family's, a name whose
+prefix is not a family or does not match its category, a frontmatter
+`name` that does not match its directory, a description outside 1-1024
 characters, a `license` that is not the pack's, a shipped file that
 `SKILL.md` never references, a vendored reference that differs from its
-`shared-references/` origin, a generated file that differs from what the
-build produces, workflow steps not numbered `1..n`, CRLF line endings
+`shared-references/` origin, a shared reference whose last line is not
+`End of` and its vendored name, a `social-` skill that does not list
+`references/SOCIAL.md`, a skill whose own files name a tool that reads
+posts or a profile's `chatter` section without carrying that reference,
+a generated file that differs from what the build produces, workflow steps not numbered `1..n`, CRLF line endings
 anywhere, a hand-off to a skill that is not in the pack, a
 `metadata.version` key, a skill missing from the README table, a README
 that does not show the current install id, a `plugin.json` version that
@@ -265,9 +282,21 @@ build, commit both. A pull request that edits a vendored copy directly
 will fail validation. The list lives in `FILES` in
 `scripts/build_skills.py`; the validator reads the same list.
 
-`shared-references/lmty.md` is the only place LMTY's tool names appear.
-Skill bodies talk about capabilities, so an interface change touches one
-file.
+One reference is optional. `shared-references/social.md`, the rules for
+reading public posts, is copied as `references/SOCIAL.md` only into a
+skill whose `SKILL.md` lists that file, because it is long and most
+skills never read a post. It is in `OPTIONAL_FILES` in
+`scripts/build_skills.py`. Every `social-` skill lists it. So does any
+other skill whose own files name `list_mentions`, `get_mention_stats`,
+`list_tracked_keywords` or a profile's `chatter` section: the validator
+rejects one that does not. To add it to a skill, list
+`references/SOCIAL.md` in its `SKILL.md` and run the build; to drop it,
+remove the line and run the build, which deletes the copy.
+
+`shared-references/lmty.md` is where LMTY's tool names appear, and
+`shared-references/social.md` holds the detail of the tools that read
+posts. Skill bodies talk about capabilities, so an interface change
+touches those files and no skill.
 
 ## Changing a skill
 
@@ -287,11 +316,28 @@ file.
   Claude Code accepts more, but claude.ai uploads, the Skills API and
   other clients reject a skill that uses anything outside the six the
   Agent Skills spec defines, so the skills stay inside it.
-- `com.lmty.category` is `ci` - the only group the pack has today. The
-  key is namespaced because the spec asks for keys unlikely to collide,
-  and both Claude Code and Codex have a `category` of their own nearby.
-  A second value means the pack's shape changed; that is a decision to
-  make deliberately, so the validator rejects one.
+- `com.lmty.category` follows the skill's family, which is its name
+  prefix. `competitive-` skills are `ci`: they work from the user's own
+  product and its tracked competitors. `company-` skills are `company`:
+  they work from LMTY's public profiles of any company, product or
+  person, expect those profiles to be connected, and never need a
+  product of the user's own. `social-` skills are `social`: they join a
+  company's dated changes to the public posts LMTY collects for a
+  signed-in product, and expect Social Listening to be on. The key is namespaced because the spec
+  asks for keys unlikely to collide, and both Claude Code and Codex
+  have a `category` of their own nearby. Another family means the
+  pack's shape changed; that is a decision to make deliberately, so the
+  validator rejects a prefix or a value it does not know.
+- A `company-` skill says in its body that it expects LMTY's public
+  profiles, and a `social-` skill that it expects LMTY's social
+  listening. That sentence is what turns on the family's one-time line
+  saying what is missing, in `shared-references/lmty.md` for public
+  profiles and in `shared-references/social.md` for social listening; a
+  skill without it never tells the user to connect or turn on anything.
+- Every skill has a `## Cadence` section whose first words are `On
+  demand`, `Daily`, `Weekly`, `Monthly` or `Quarterly`. A skill worth repeating says
+  what a repeat run leads with, and points at "Repeat runs" in
+  `references/QUALITY.md`.
 - The two remaining spec fields stay unused, and the validator rejects
   them. `compatibility` states an environment requirement, and these
   skills have none: no scripts, no packages, no required product, and
@@ -319,13 +365,90 @@ file.
 - LF line endings. `.gitattributes` enforces it, and so does the
   validator.
 
+## Rules for a skill on LMTY data
+
+A new `company-` or `social-` skill meets all eleven. A `competitive-`
+skill meets 1, 2, 3, 4, 5, 7 and 10 wherever it reads LMTY, and marks
+outside material in place as `lmty.md` says under "Outside LMTY's
+record" instead of rule 11. Each rule is stated
+once, in the shared reference named beside it; the skill applies it in
+its own steps and does not restate it. `lmty.md`, `social.md` and
+`trust-and-evidence.md` are the files in `shared-references/`;
+`social.md` reaches only a skill that lists `references/SOCIAL.md`, so
+the rules that point at it bind a skill that reads posts.
+
+1. A discovery date is not news: "new" needs the record's real date,
+   otherwise "first seen". `lmty.md`, "Dates" and "A tie's `since`".
+2. A customer list is the vendor's own claim: say who says it.
+   `lmty.md`, "Customers", "A company as a customer" and "Grades";
+   `trust-and-evidence.md`, "Verdicts on a claim".
+3. A thin profile is a valid answer: say what is missing and do not
+   fill the gap. `lmty.md`, "What a profile is not";
+   `trust-and-evidence.md`, "Never fill a gap with a plausible
+   sentence".
+4. The grade stays on every fact, and chatter is never stated as fact.
+   `lmty.md`, "Grades".
+5. The date is the story's own, not that of the page it is on or of the
+   post that reports it. `lmty.md`, "Dates"; `social.md`, "Dated events
+   and posts": "A `published` date belongs to the source, not the
+   change".
+6. Sort authors before counting them; an author is a handle, and not
+   promoting a vendor does not make an account independent. `social.md`,
+   "Authors".
+7. Say how many were read out of how many. `lmty.md`, "Reading in
+   pieces"; for posts, `social.md`, "How much was read".
+8. Find when collection began before comparing two periods.
+   `social.md`, "When collection began, and what changed in it" and its
+   checklist, "Before comparing two periods".
+9. A post that matched a keyword is not thereby about the company.
+   `social.md`, "Tags, sentiment, relevance and matched keywords": the
+   bullet that begins "Matched a keyword".
+10. Nothing about the subject from memory, even labeled. `lmty.md`,
+    under "Grades": "Nothing from memory".
+11. Outside material goes in its own labeled section and never into the
+    record's tables, summary or verdict. `lmty.md`, "Outside LMTY's
+    record".
+
+## Playbooks
+
+A playbook is a skill's short form: `playbooks/<skill-name>.md`, a prompt
+of at most 45 lines that works in any assistant with only the LMTY server
+connected and nothing installed. Every `company-` and `social-` skill has
+one. A `competitive-` skill starts from the user's account and their own
+material: it has one when a pasted prompt can carry the job, with
+`connect: account`, and says in the body what the user must paste or
+attach. `competitive-deep-dive`, `competitive-positioning` and
+`competitive-win-loss-analysis` depend on more material than a prompt can
+carry, and have none.
+
+The front matter is what a page shows beside the text: `skill`, `title`,
+`audience`, `cadence` (the first words of the skill's Cadence section),
+`connect` (`public`, `account`, `social`, or `social-optional` for a skill with a free form of its own that an account with Social Listening on makes the full read: what the connection needs),
+`summary`, `delivers`, and `inputs`, one entry per placeholder. The body
+is the text to paste, with placeholders as `{UPPER_CASE}`.
+
+- A playbook says nothing its skill does not. Change the skill first.
+- It stands alone: it cannot point at a reference file, so it carries the
+  few evidence rules that matter most for its job, in a closing "Rules"
+  paragraph.
+- It names tools, because the reader has no other way to learn them.
+  Every tool it names must appear in `shared-references/lmty.md`; the
+  validator checks.
+- It names no address but the LMTY server's.
+- Anything it has the assistant write for someone outside the user's
+  organization is a draft.
+
+`library.json` is generated from the playbooks, with each skill's example
+requests, for a web page that lists them. Do not edit it.
+
 ## Adding a skill
 
 Create `skills/<name>/SKILL.md` with the four frontmatter fields above,
 run the build so it gets the vendored references, add a row to the
 table in `README.md`, add the skill to the dropdown in
-`.github/ISSUE_TEMPLATE/bug_report.yml`, and have at least one existing
-skill point to it from its "Do not use this skill when" section. The
+`.github/ISSUE_TEMPLATE/bug_report.yml`, write its playbook if its
+family has them, and have at least one existing skill point to it from
+its "Do not use this skill when" section. The
 validator will tell you what is missing.
 
 ## Releasing
@@ -344,6 +467,14 @@ Releases are tagged `vX.Y.Z` and published by `.github/workflows/release.yaml`.
 4. Commit, tag `vX.Y.Z`, push the tag. The workflow validates, rebuilds
    the zip, signs its build provenance, and creates the GitHub Release
    with it attached.
+5. Publish the new version of the MCP Registry entry. Each version is
+   published once, so the registry only picks up a change to
+   `server.json` through a release:
+
+   ```sh
+   mcp-publisher login dns --domain=lmty.com --private-key="$MCP_REGISTRY_PRIVATE_KEY"
+   mcp-publisher publish server.json
+   ```
 
 Releases are immutable. Once published, the zip and the tag cannot be
 changed or deleted, and the tag name can never be reused, so a mistake

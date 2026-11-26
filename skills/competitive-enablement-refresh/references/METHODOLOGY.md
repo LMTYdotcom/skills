@@ -1,4 +1,4 @@
-# Sales Enablement Refresh Methodology
+# Competitive Enablement Refresh Methodology
 
 ## Core principle
 
@@ -16,9 +16,9 @@ Pull the claims out before classifying. A twelve-slide deck may have six claims 
 
 **Current.** Supported by approved proof or current evidence; wording right; date acceptable. Leave it alone and say so.
 
-**Stale.** Was true, is not now, because something moved: a price, a tier, a certification, an integration, a customer reference that left. Always has a change behind it, with a date. The fix is the new fact, its proof, and a history note.
+**Stale.** Behind a newer source, because something moved: a price, a tier, a certification, an integration, a customer reference no longer listed. Always has a change behind it, with a date and how that date is known. The fix is the new fact, its proof, and a history note.
 
-**Unsupported.** Never had approved proof or evidence behind it. The driving change did not break it; it revealed that nothing was holding it up. "Over 10,000 teams have switched" with no source; "we're SOC 2" when the approved claims doc says certification status comes from security. The fix is the supportable version, or removal.
+**Unsupported.** Never had approved proof or evidence behind it. The driving change did not break it; it revealed that nothing was holding it up. "Over 10,000 teams have switched" with no source; "we're SOC 2" when the approved claims doc says certification status comes from security. The fix is the supportable version, or removal. A home-product line the approved claims deny is marked unsupported too, with "denied by the approved claims" as the first words of the reason. The denied line is never drafted, even conditionally ("once approved..."): a conditional draft is still a line a rep can lift.
 
 **Incomplete.** Correct, and silent on something the field is now asked. The gap is defined by the field questions, not by what the PMM thinks should be there. The fix is an addition scoped to the question.
 
@@ -31,7 +31,7 @@ Priority is the cost of a rep saying the old line today, not the size of the edi
 1. a number a buyer can check - price, tier, seat limit
 2. a capability claim the buyer will test in a demo or POC
 3. a security or compliance assertion the buyer's security team will verify
-4. a customer reference that has churned or never approved the mention
+4. a customer reference no longer listed, or one that never approved the mention
 5. a competitor weakness that is no longer true
 6. framing and tone
 
@@ -51,9 +51,17 @@ Not a rewrite of the surrounding section. Not new claims the refresh was not ask
 
 When the new line contradicts the old one, reps who learned the old one will hold both until one wins. Give them the history:
 
-> Until September 2026 this card said Monday.com's enterprise pricing was sales-gated. On 2026-09-09 they published it and removed the Enterprise tier. If a buyer quotes the old line back to you, that is why.
+> Until September 2026 this card said Northwind's enterprise pricing was sales-gated. Northwind's pricing page has shown enterprise prices since 2026-09-09, per its price history, and no longer lists the Enterprise tier as of that date. If a buyer quotes the old line back to you, that is why.
 
 A reversal without history creates a rep who says the old thing with more confidence.
+
+## Dates, and how each is known
+
+A rep repeats the date a card gives. Give the change's own date only where the record states one: a dated event whose basis says it happened then, the competitor's price history, the announcement itself. A publisher's date is "reported on". A change-record entry carries the date LMTY recorded it: "LMTY recorded it on [date]", never "on [date] they changed". A plan or page that stopped being listed is "no longer listed as of [date]", never "removed" or "dropped", unless a source says so.
+
+## What was read
+
+Every count says what it is out of: 3 of the 40 calls read, 4 of the 6 assets in scope, the change record read back to a date or to its start. A refresh built on part of the record says which part.
 
 ## Requests for unsupportable lines
 

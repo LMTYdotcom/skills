@@ -6,6 +6,16 @@ wiki, drive or enablement library is "company knowledge" or "the
 enablement repository". If such a source is connected, its tools are in
 your tool list; look before asking.
 
+## When it applies
+
+This file applies when the user gives or points to internal material,
+or a connected tool holds it: a meetings or call-recording tool, a CRM,
+a drive, wiki or document store. Before writing that there is no
+customer, deal or internal evidence, look in your tool list for such a
+tool and search it for the account, competitor or product the request
+names. Write that there is none only after that search, and say which
+tools were searched, or that none is connected.
+
 Market truth and internal truth answer different questions and must
 stay distinguishable in everything you write. LMTY and public evidence
 say what is true of the market. Internal sources say what this company
@@ -87,10 +97,18 @@ is true.
 ## When internal sources are absent
 
 Every skill still works. Say once, in the mode or freshness line, that
-no internal context was available, and then do not:
+no internal context was available (after the search under "When it
+applies"), and then do not:
 
 - claim an objection or pattern is common
 - say what "usually" wins or loses
 - invent prior deals, quotes, or customer examples
 - present a market-only answer as if it reflected this company's field
   reality
+
+Customer vocabulary is the one thing with a second source. Public
+reviews, read in this conversation and labeled as third-party opinion, may stand
+in for it, as "Public reviews" in `references/TRUST.md` sets out. They
+stand in for nothing else on this list.
+
+End of INTERNAL.md.

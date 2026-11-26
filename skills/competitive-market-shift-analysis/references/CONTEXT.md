@@ -24,7 +24,8 @@ Think in eight layers.
    - LMTY is the preferred structured source when available.
 
 4. **Customer context**
-   - Interviews, support, reviews, win/loss, call transcripts, customer research.
+   - Interviews, support, win/loss, call transcripts, customer research.
+   - Public reviews, for vocabulary only and labeled as third-party opinion: "Public reviews" in `references/TRUST.md`.
 
 5. **Deal context**
    - CRM, active opportunities, objections, competitor mentions, stage, segment, prior wins and losses.
@@ -45,7 +46,7 @@ Not every skill needs every layer.
 1. Inspect task inputs and attached files.
 2. Inspect LMTY if available and relevant.
 3. Inspect connected internal systems that directly bear on the job.
-4. Use web research for missing current external context.
+4. Use web research for missing current external context. A skill that expects LMTY's public profiles, with a profile found, follows "Outside LMTY's record" in `references/LMTY.md` instead.
 5. Ask the user only for genuinely unavailable context that would materially change the result.
 
 ## Minimum sufficient context
@@ -79,11 +80,11 @@ When LMTY is available, a typical sequence is:
 1. identify the home product and as-of state
 2. load competitor set and tracking status
 3. load the relevant current report sections
-4. retrieve recent changes, then filter them yourself to the subjects, sections and dates the task needs
+4. retrieve changes back to the date the task needs (`since`), then filter them yourself to the subjects and sections it needs
 5. rank what matters using your own stated criteria, and say the ranking is yours
 6. preserve evidence and freshness in downstream outputs
 
-LMTY returns no ranked briefing and cannot filter changes server-side. See `references/LMTY.md` for what it does and does not do.
+LMTY returns no ranked briefing and filters changes by date only. See `references/LMTY.md` for what it does and does not do.
 
 Do not pull every LMTY object by default. Retrieve only what the task needs.
 
@@ -95,11 +96,15 @@ Every skill has a small set of inputs it cannot run without - typically the home
 
 Retrieve before you ask. Most of that minimum is discoverable: a connected market-intelligence connector knows the home product and the tracked competitor set, and attached files often name the subject. Asking the user to repeat something a tool would have told you is a worse failure than asking nothing.
 
-When a piece of that minimum is genuinely missing and cannot be retrieved, ask for it and stop. Do not infer it, do not pick the most likely candidate, and do not produce a generic version of the artifact as a placeholder while asking.
+When a piece of that minimum is genuinely missing and cannot be retrieved, ask for it and stop. Do not infer it and go ahead, and do not produce a generic version of the artifact as a placeholder while asking. Naming the likely candidate in the question, for the user to confirm, is not inferring it.
+
+A missing input that names the subject (the account, the release, the competitor) is part of that minimum: ask first. "A bank" is not an account. Missing supporting evidence (calls, CRM records, deal notes) is not: run the skill's short form and say in its first line what is missing. That line is one sentence naming what is missing; the detail (what was read, what each gap leaves out) goes where the template keeps it. Each skill says which of its inputs is which.
 
 A request like "put together a battlecard, we keep running into them in deals" names no competitor. The correct response is one short question. Guessing the competitor and delivering a fully formatted card is the worst available outcome: it looks finished, so nobody checks the premise.
 
-When asking, ask for the minimum, say why it changes the answer, and offer the inference you would otherwise have made so the user can simply confirm it.
+When asking, ask for the minimum, say why it changes the answer, and offer the inference you would otherwise have made so the user can simply confirm it. Ask for one thing. Nothing else follows the question, not "it would also help to know". When the choice is among tracked competitors or connected products, list their names in the question.
+
+**When nobody can answer.** On a scheduled run, or a request where no reply is expected, do not ask and do not wait, and still do not infer. Use what the routine's own prompt and the earlier run give. If a piece of the minimum is still missing, say in the first line, above the artifact's title, what is missing and what the candidates are, do the part of the work that does not depend on it, and stop. No placeholder artifact.
 
 ### Everything else: proceed and label
 
@@ -116,3 +121,5 @@ Examples usually not worth asking:
 - exact output format when a strong default exists
 - whether to inspect LMTY when it is connected and clearly relevant
 - whether to look at attached source material
+
+End of CONTEXT.md.
