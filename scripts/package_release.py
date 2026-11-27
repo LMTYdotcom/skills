@@ -7,6 +7,7 @@ license, the README, skills/ and assets/. Left out: shared-references/
 
 Deterministic: entries sorted, one fixed timestamp. Pass --check-tag
 vX.Y.Z to fail if it does not match plugin.json.
+Use --openai-upload to build a ZIP for the existing OpenAI listing.
 """
 from __future__ import annotations
 
@@ -35,10 +36,13 @@ TOP_LEVEL = (
 
 TREES = ("skills", "assets")
 
+OPENAI_PACKAGE_NAME = "app-6aa82bfa4cb08191898f950f28cff258"
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check-tag", help="fail unless this equals v<plugin.json version>")
+    ap.add_argument("--openai-upload", action="store_true", help="package an update for the existing OpenAI listing")
     args = ap.parse_args()
 
     manifest = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
@@ -47,7 +51,13 @@ def main() -> int:
         print(f"tag {args.check_tag} does not match plugin.json version {version}", file=sys.stderr)
         return 1
 
-    files: list[tuple[str, bytes]] = [(name, (ROOT / name).read_bytes()) for name in TOP_LEVEL]
+    files: list[tuple[str, bytes]] = []
+    for name in TOP_LEVEL:
+        blob = (ROOT / name).read_bytes()
+        if args.openai_upload and name == "plugin.json":
+            manifest["name"] = OPENAI_PACKAGE_NAME
+            blob = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+        files.append((name, blob))
     for tree in TREES:
         for path in sorted((ROOT / tree).rglob("*")):
             if path.is_file():
@@ -67,7 +77,8 @@ def main() -> int:
         return 1
 
     DIST.mkdir(exist_ok=True)
-    out = DIST / f"{plugin}-{version}.zip"
+    suffix = "-openai" if args.openai_upload else ""
+    out = DIST / f"{plugin}-{version}{suffix}.zip"
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, blob in sorted(files):
             info = zipfile.ZipInfo(name, date_time=FIXED_DATE)
